@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Smith Legend Data</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="data.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <h1>Smith Legend Data</h1>
+          <p id="datasetStats">Loading extracted data</p>
+        </div>
+        <nav class="tabs" aria-label="Primary views">
+          <button class="tab is-active" type="button" data-view="overview">Overview</button>
+          <button class="tab" type="button" data-view="pets">Pets</button>
+          <button class="tab" type="button" data-view="skills">Skills</button>
+          <button class="tab" type="button" data-view="calculator">Calculator</button>
+          <button class="tab" type="button" data-view="formulas">Formulas</button>
+        </nav>
+      </header>
+
+      <main class="content">
+        <section id="overviewView" class="view is-active" data-view-panel="overview">
+          <div class="toolbar">
+            <label class="control control-range">
+              <span>Pet level <output id="overviewPetLevelOut">100</output></span>
+              <input id="overviewPetLevel" type="range" min="0" max="100" value="100">
+            </label>
+            <label class="control control-range">
+              <span>Skill level <output id="overviewSkillLevelOut">100</output></span>
+              <input id="overviewSkillLevel" type="range" min="0" max="100" value="100">
+            </label>
+          </div>
+
+          <div id="overviewSummary" class="metric-grid"></div>
+
+          <div class="two-col">
+            <section class="data-panel">
+              <div class="panel-head">
+                <h2>Top Pet Stats</h2>
+              </div>
+              <div id="overviewTopPets" class="table-wrap compact"></div>
+            </section>
+
+            <section class="data-panel">
+              <div class="panel-head">
+                <h2>Top Skill Values</h2>
+              </div>
+              <div id="overviewTopSkills" class="table-wrap compact"></div>
+            </section>
+          </div>
+        </section>
+
+        <section id="petsView" class="view" data-view-panel="pets">
+          <div class="toolbar">
+            <label class="control">
+              <span>Search</span>
+              <input id="petSearch" type="search" placeholder="Pet, stat, rarity">
+            </label>
+            <label class="control">
+              <span>Rarity</span>
+              <select id="petRarityFilter"></select>
+            </label>
+            <label class="control">
+              <span>Stat</span>
+              <select id="petStatFilter"></select>
+            </label>
+            <label class="control control-range">
+              <span>Level <output id="petLevelOut">100</output></span>
+              <input id="petLevel" type="range" min="0" max="100" value="100">
+            </label>
+          </div>
+          <div class="table-meta" id="petTableMeta"></div>
+          <div class="table-wrap">
+            <table class="data-table" id="petTable">
+              <thead id="petTableHead"></thead>
+              <tbody id="petTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="skillsView" class="view" data-view-panel="skills">
+          <div class="toolbar">
+            <label class="control">
+              <span>Search</span>
+              <input id="skillSearch" type="search" placeholder="Skill, rarity, target">
+            </label>
+            <label class="control">
+              <span>Rarity</span>
+              <select id="skillRarityFilter"></select>
+            </label>
+            <label class="control control-range">
+              <span>Level <output id="skillLevelOut">100</output></span>
+              <input id="skillLevel" type="range" min="0" max="100" value="100">
+            </label>
+          </div>
+          <div class="table-meta" id="skillTableMeta"></div>
+          <div class="table-wrap">
+            <table class="data-table" id="skillTable">
+              <thead id="skillTableHead"></thead>
+              <tbody id="skillTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="calculatorView" class="view" data-view-panel="calculator">
+          <div class="two-col calculator-grid">
+            <section class="data-panel">
+              <div class="panel-head">
+                <h2>Skill Calculator</h2>
+              </div>
+              <div class="calc-controls">
+                <label class="control">
+                  <span>Skill</span>
+                  <select id="skillCalcSelect"></select>
+                </label>
+                <label class="control control-range">
+                  <span>Level <output id="skillCalcLevelOut">100</output></span>
+                  <input id="skillCalcLevel" type="range" min="0" max="100" value="100">
+                </label>
+                <label class="control number-control">
+                  <span>Exact level</span>
+                  <input id="skillCalcLevelNumber" type="number" min="0" max="100" value="100">
+                </label>
+              </div>
+              <div id="skillCalcMetrics" class="metric-grid"></div>
+            </section>
+
+            <section class="data-panel">
+              <div class="panel-head">
+                <h2>Pet Build Calculator</h2>
+              </div>
+              <div class="calc-controls">
+                <label class="control control-range">
+                  <span>Set selected level <output id="petBuildLevelOut">100</output></span>
+                  <input id="petBuildLevel" type="range" min="0" max="100" value="100">
+                </label>
+                <div class="button-row">
+                  <button id="selectAllPets" type="button">All</button>
+                  <button id="clearPets" type="button">Clear</button>
+                  <button id="topAttackPets" type="button">Top attack</button>
+                  <button id="topCooldownPets" type="button">Top cooldown</button>
+                </div>
+              </div>
+              <div id="petBuildTotals" class="stat-total-grid"></div>
+            </section>
+          </div>
+
+          <section class="data-panel pet-build-panel">
+            <div class="panel-head">
+              <h2>Pet Selection</h2>
+              <span id="petBuildMeta" class="panel-note"></span>
+            </div>
+            <div class="table-wrap compact">
+              <table class="data-table" id="petBuildTable">
+                <thead>
+                  <tr>
+                    <th class="narrow">Use</th>
+                    <th>Pet</th>
+                    <th>Rarity</th>
+                    <th class="level-col">Level</th>
+                    <th>Calculated stats</th>
+                  </tr>
+                </thead>
+                <tbody id="petBuildBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="formulasView" class="view" data-view-panel="formulas">
+          <div class="two-col">
+            <section class="data-panel">
+              <div class="panel-head">
+                <h2>Pet Formulas</h2>
+              </div>
+              <pre class="formula-box">EXP multiplier:
+  level 0-39   = 2
+  level 40-49  = 3
+  level 50-59  = 4
+  level 60-69  = 5
+  level 70-79  = 6
+  level 80-89  = 7
+  level 90+    = 8
+
+requiredExp(level) = multiplier * (level + 1)
+
+statValue(level, baseValue, statType) =
+  baseValue + ((baseValue / denominator) * level)
+
+denominator:
+  AttackDamage = 10
+  all other pet stats = 25</pre>
+            </section>
+
+            <section class="data-panel">
+              <div class="panel-head">
+                <h2>Skill Formulas</h2>
+              </div>
+              <pre class="formula-box">EXP multiplier:
+  level 0-49   = 2
+  level 50-59  = 3
+  level 60-69  = 4
+  level 70+    = 5
+
+requiredExp(level) = multiplier * (level + 1)
+
+rarityMultiplier:
+  Common    = 1
+  Rare      = 2
+  Epic      = 5
+  Legendary = 10
+  Mystic    = 15
+
+bonusDamage(level, rarity) =
+  level * rarityMultiplier</pre>
+            </section>
+          </div>
+
+          <section class="data-panel">
+            <div class="panel-head">
+              <h2>Known Limits</h2>
+            </div>
+            <p class="notes">
+              Skill Base + bonus uses the recovered Skill.BonusDamage method. Simple chain multiplies that value by extracted multiple and bounce counts. Skill.AttackForText and Skill.BackgroundPattern also touch behavior objects and PvP/game-state data, so those runtime parts are not included here.
+            </p>
+          </section>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
