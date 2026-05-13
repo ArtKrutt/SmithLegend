@@ -7736,7 +7736,7 @@ window.SMITH_LEGEND_DATA = {
     ]
   },
   "base": {
-    "note": "GuildBaseData.Configs is client-side static data. Bonus-per-level values were recovered directly. Some labels are fallback English strings because these IL2CPP string slots are runtime-initialized in this APK. Cost/time arrays are embedded via RuntimeHelpers.InitializeArray field blobs and are marked present but not decoded.",
+    "note": "GuildBaseData.Configs is client-side static data. Bonus-per-level values were recovered directly. Some labels are fallback English strings because these IL2CPP string slots are runtime-initialized. Cost/time arrays are embedded via RuntimeHelpers.InitializeArray field blobs and are marked present but not decoded.",
     "source": "cpp2il_out_isil_1.0.41/IsilDump/Assembly-CSharp/GuildBaseData.txt",
     "buildings": [
       {
@@ -7861,7 +7861,7 @@ window.SMITH_LEGEND_DATA = {
     ]
   },
   "pvpRewards": {
-    "note": "LeagueRewardConfig.GetRewardsForTier is client-side static data. Entries are grouped by rank threshold, with one row per league tier. Reward resource names are runtime-initialized IL2CPP strings in this APK, so unresolved keys are named reward_1, reward_2, etc. in native Add-call order.",
+    "note": "LeagueRewardConfig.GetRewardsForTier is client-side static data. Entries are grouped by rank threshold, with one row per league tier. Reward resource names are runtime-initialized IL2CPP strings, so unresolved keys are named reward_1, reward_2, etc. in native Add-call order.",
     "source": "cpp2il_out_isil_1.0.41/IsilDump/Assembly-CSharp/LeagueRewardConfig.txt",
     "decodedAddCount": 240,
     "resourceKeys": [
