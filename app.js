@@ -4,6 +4,15 @@
   const source = window.SMITH_LEGEND_DATA || { pets: [], skills: [] };
   const pets = Array.isArray(source.pets) ? source.pets : [];
   const skills = Array.isArray(source.skills) ? source.skills : [];
+  const wings = Array.isArray(source.wings) ? source.wings : [];
+  const mounts = Array.isArray(source.mounts) ? source.mounts : [];
+  const events = source.events || {};
+  const baseData = source.base || {};
+  const pvpRewards = source.pvpRewards || {};
+  const rarityUpgrades = source.rarityUpgrades || {};
+  const iconRecords = source.icons && Array.isArray(source.icons.records) ? source.icons.records : [];
+  const iconByKey = new Map(iconRecords.map((record) => [`${record.category}:${record.id}`, record]));
+  let iconZoomEl = null;
 
   const rarityNames = ["Common", "Rare", "Epic", "Legendary", "Mystic"];
   const rarityClass = ["common", "rare", "epic", "legendary", "mystic"];
@@ -26,7 +35,13 @@
   const state = {
     activeView: "overview",
     petSort: { key: "petNum", dir: "asc" },
-    skillSort: { key: "knownAttack", dir: "desc" },
+    skillSort: { key: "dps", dir: "desc" },
+    wingSort: { key: "wingNum", dir: "asc" },
+    mountSort: { key: "mountNum", dir: "asc" },
+    eventSort: { key: "category", dir: "asc" },
+    baseSort: { key: "id", dir: "asc" },
+    pvpSort: { key: "tier", dir: "asc" },
+    raritySort: { key: "level", dir: "asc" },
     petBuildLevels: new Map(),
     selectedPets: new Set()
   };
@@ -57,6 +72,26 @@
     skillTableMeta: document.getElementById("skillTableMeta"),
     skillTableHead: document.getElementById("skillTableHead"),
     skillTableBody: document.getElementById("skillTableBody"),
+    wingSearch: document.getElementById("wingSearch"),
+    wingTableMeta: document.getElementById("wingTableMeta"),
+    wingTableHead: document.getElementById("wingTableHead"),
+    wingTableBody: document.getElementById("wingTableBody"),
+    mountSearch: document.getElementById("mountSearch"),
+    mountTableMeta: document.getElementById("mountTableMeta"),
+    mountTableHead: document.getElementById("mountTableHead"),
+    mountTableBody: document.getElementById("mountTableBody"),
+    eventTableMeta: document.getElementById("eventTableMeta"),
+    eventTableHead: document.getElementById("eventTableHead"),
+    eventTableBody: document.getElementById("eventTableBody"),
+    baseTableMeta: document.getElementById("baseTableMeta"),
+    baseTableHead: document.getElementById("baseTableHead"),
+    baseTableBody: document.getElementById("baseTableBody"),
+    pvpTableMeta: document.getElementById("pvpTableMeta"),
+    pvpTableHead: document.getElementById("pvpTableHead"),
+    pvpTableBody: document.getElementById("pvpTableBody"),
+    rarityTableMeta: document.getElementById("rarityTableMeta"),
+    rarityTableHead: document.getElementById("rarityTableHead"),
+    rarityTableBody: document.getElementById("rarityTableBody"),
     skillCalcSelect: document.getElementById("skillCalcSelect"),
     skillCalcLevel: document.getElementById("skillCalcLevel"),
     skillCalcLevelOut: document.getElementById("skillCalcLevelOut"),
@@ -110,6 +145,101 @@
 
   function skillName(skill) {
     return skill.skillName || skill.skillKey || String(skill.gameObjectName || "").replace(/^Skill_/, "") || `Skill ${skill.skillNum}`;
+  }
+
+  function wingName(wing) {
+    return wing.wingName || `Wing ${wing.wingNum}`;
+  }
+
+  function mountName(mount) {
+    return mount.mountName || `Mount ${mount.mountNum}`;
+  }
+
+  function iconRecord(category, id) {
+    return iconByKey.get(`${category}:${id}`) || null;
+  }
+
+  function iconName(record) {
+    return record && record.sprite ? record.sprite.name : "";
+  }
+
+  function textureWebPath(texture) {
+    if (!texture) return "";
+    if (texture.webPath) return texture.webPath;
+    if (texture.pngPath && texture.pngPath.startsWith("web/")) return texture.pngPath.slice(4);
+    return texture.pngPath || "";
+  }
+
+  function cssPixel(value) {
+    return `${Math.round(Number(value || 0) * 100) / 100}px`;
+  }
+
+  function cssUrl(value) {
+    return String(value || "")
+      .replace(/\\/g, "/")
+      .replace(/"/g, "%22")
+      .replace(/'/g, "%27")
+      .replace(/\(/g, "%28")
+      .replace(/\)/g, "%29")
+      .replace(/\s/g, "%20");
+  }
+
+  function renderSpriteIcon(record, size = 42, extraClass = "") {
+    const sprite = record && record.sprite;
+    const texture = sprite && sprite.texture;
+    const rect = sprite && sprite.rect;
+    const webPath = textureWebPath(texture);
+    if (!texture || !rect || !webPath) return "";
+
+    const scale = Number(size || 42) / Math.max(Number(rect.width) || 1, Number(rect.height) || 1);
+    const topY = Number(texture.height || 0) - Number(rect.y || 0) - Number(rect.height || 0);
+    const style = [
+      `width:${cssPixel(rect.width * scale)}`,
+      `height:${cssPixel(rect.height * scale)}`,
+      `background-image:url("${cssUrl(webPath)}")`,
+      `background-size:${cssPixel(texture.width * scale)} ${cssPixel(texture.height * scale)}`,
+      `background-position:${cssPixel(-rect.x * scale)} ${cssPixel(-topY * scale)}`
+    ].join(";");
+    const label = `${record.category} icon: ${record.name}`;
+    const className = `sprite-icon${extraClass ? ` ${extraClass}` : ""}`;
+    return `<span class="${escapeHtml(className)}" role="img" aria-label="${escapeHtml(label)}" style="${escapeHtml(style)}"></span>`;
+  }
+
+  function renderIconCell(record) {
+    if (!record || !record.sprite) return "";
+    return `<div class="icon-only" data-icon-category="${escapeHtml(record.category)}" data-icon-id="${escapeHtml(record.id)}">${renderSpriteIcon(record)}</div>`;
+  }
+
+  function ensureIconZoom() {
+    if (iconZoomEl) return iconZoomEl;
+    iconZoomEl = document.createElement("div");
+    iconZoomEl.className = "icon-zoom-popover";
+    iconZoomEl.setAttribute("aria-hidden", "true");
+    document.body.appendChild(iconZoomEl);
+    return iconZoomEl;
+  }
+
+  function hideIconZoom() {
+    if (iconZoomEl) iconZoomEl.classList.remove("is-visible");
+  }
+
+  function showIconZoom(cell) {
+    const record = iconRecord(cell.dataset.iconCategory, cell.dataset.iconId);
+    if (!record || !record.sprite) return;
+    const popover = ensureIconZoom();
+    popover.innerHTML = renderSpriteIcon(record, 126);
+    popover.classList.add("is-visible");
+
+    const rect = cell.getBoundingClientRect();
+    const width = popover.offsetWidth;
+    const height = popover.offsetHeight;
+    const gap = 10;
+    let left = rect.left + rect.width / 2 - width / 2;
+    let top = rect.top - height - gap;
+    left = Math.max(8, Math.min(window.innerWidth - width - 8, left));
+    if (top < 8) top = Math.min(window.innerHeight - height - 8, rect.bottom + gap);
+    popover.style.left = `${Math.max(8, left)}px`;
+    popover.style.top = `${Math.max(8, top)}px`;
   }
 
   function rarityLabel(rarity) {
@@ -177,14 +307,58 @@
     return level * (rarityMultiplier[Number(skill.rarity)] || 0);
   }
 
+  function petBonusDamage(pet, level) {
+    return level * (rarityMultiplier[Number(pet.rarity)] || 0);
+  }
+
   function knownSkillAttack(skill, level) {
     return Number(skill.baseAttack || 0) + skillBonusDamage(skill, level);
+  }
+
+  function petAttackPlusBonus(pet, level) {
+    return petStatAtLevel(pet, 0, level) + petBonusDamage(pet, level);
   }
 
   function simpleSkillChain(skill, level) {
     const multi = Math.max(1, Number(skill.baseMultipleCount || 0));
     const bounce = Math.max(1, Number(skill.baseBounceCount || 0));
     return knownSkillAttack(skill, level) * multi * bounce;
+  }
+
+  function skillDps(skill, level) {
+    const cooldown = Number(skill.startedCooldown || 0);
+    if (cooldown <= 0) return 0;
+    return simpleSkillChain(skill, level) / cooldown;
+  }
+
+  function targetInfo(value) {
+    const target = Number(value || 0);
+    const labels = {
+      0: {
+        label: "Target",
+        detail: "Generic in-game target label. Native SkillUiGenel.TargetString does not distinguish this from target 1."
+      },
+      1: {
+        label: "Target",
+        detail: "Second generic in-game target value. Native SkillUiGenel.TargetString shows the same label as target 0."
+      },
+      2: {
+        label: "Highest HP",
+        detail: "Native SkillUiGenel.TargetString maps value 2 to the highest-HP target label."
+      },
+      3: {
+        label: "Random enemy",
+        detail: "Native SkillUiGenel.TargetString maps value 3 to the random-enemy target label."
+      }
+    };
+    return labels[target] || { label: `Target ${target}`, detail: "Unknown target value in recovered data." };
+  }
+
+  function renderTargetCell(skill) {
+    const target = targetInfo(skill.targetNedir);
+    return `<span class="target-cell" title="${escapeHtml(target.detail)}">${escapeHtml(target.label)} <span class="name-sub">${escapeHtml(
+      `(${skill.targetNedir})`
+    )}</span></span>`;
   }
 
   function nextExpLabel(item, level, requiredExpFn) {
@@ -194,13 +368,18 @@
   }
 
   function statChipsForPet(pet, level) {
-    return (pet.stats || [])
+    const baseChips = (pet.stats || [])
       .map((stat) => {
         const name = statLabel(stat.statType, true);
         const current = petStatValue(stat.baseValue, stat.statType, level);
         return `<span class="stat-chip"><span>${escapeHtml(name)}</span><strong>${formatNumber(current)}</strong></span>`;
       })
       .join("");
+    const bonus = petBonusDamage(pet, level);
+    const attackPlusBonus = petAttackPlusBonus(pet, level);
+    return `${baseChips}<span class="stat-chip bonus-chip"><span>Passive</span><strong>${formatNumber(
+      bonus
+    )}</strong></span><span class="stat-chip bonus-chip"><span>Atk+Bonus</span><strong>${formatNumber(attackPlusBonus)}</strong></span>`;
   }
 
   function renderNameCell(main, sub) {
@@ -246,13 +425,16 @@
 
     const bestAttackPet = pets
       .slice()
-      .sort((a, b) => petStatAtLevel(b, 0, petLevel) - petStatAtLevel(a, 0, petLevel))[0];
+      .sort((a, b) => petAttackPlusBonus(b, petLevel) - petAttackPlusBonus(a, petLevel))[0];
     const bestCooldownPet = pets
       .slice()
       .sort((a, b) => petStatAtLevel(b, 7, petLevel) - petStatAtLevel(a, 7, petLevel))[0];
     const bestSkill = skills
       .slice()
       .sort((a, b) => knownSkillAttack(b, skillLevel) - knownSkillAttack(a, skillLevel))[0];
+    const bestDpsSkill = skills
+      .slice()
+      .sort((a, b) => skillDps(b, skillLevel) - skillDps(a, skillLevel))[0];
     const fastestSkill = skills
       .slice()
       .sort((a, b) => Number(a.startedCooldown || 0) - Number(b.startedCooldown || 0))[0];
@@ -260,23 +442,28 @@
     els.overviewSummary.innerHTML = [
       renderMetric("Pets", String(pets.length), `Next EXP at L${petLevel}: ${petLevel >= 100 ? "max" : formatNumber(petRequiredExp(petLevel))}`),
       renderMetric("Skills", String(skills.length), `Next EXP at L${skillLevel}: ${skillLevel >= 100 ? "max" : formatNumber(skillRequiredExp(skillLevel))}`),
+      renderMetric("Wings", String(wings.length), "Templates with icon refs"),
+      renderMetric("Mounts", String(mounts.length), "1.0.41 templates with icon refs"),
+      renderMetric("Icon records", String(iconRecords.length), "Pets, skills, wings, mounts"),
       bestAttackPet
-        ? renderMetric("Best pet attack", formatNumber(petStatAtLevel(bestAttackPet, 0, petLevel)), petName(bestAttackPet))
+        ? renderMetric("Best pet attack + bonus", formatNumber(petAttackPlusBonus(bestAttackPet, petLevel)), petName(bestAttackPet))
         : "",
       bestCooldownPet && petStatAtLevel(bestCooldownPet, 7, petLevel) > 0
         ? renderMetric("Best pet cooldown", formatNumber(petStatAtLevel(bestCooldownPet, 7, petLevel)), petName(bestCooldownPet))
         : renderMetric("Best pet cooldown", "0", "No cooldown pet selected by stat"),
       bestSkill ? renderMetric("Highest skill base + bonus", formatNumber(knownSkillAttack(bestSkill, skillLevel)), skillName(bestSkill)) : "",
+      bestDpsSkill ? renderMetric("Highest skill DPS", formatNumber(skillDps(bestDpsSkill, skillLevel)), skillName(bestDpsSkill)) : "",
       fastestSkill ? renderMetric("Fastest skill cooldown", `${formatNumber(Number(fastestSkill.startedCooldown || 0))}s`, skillName(fastestSkill)) : ""
     ].join("");
 
     const topPetRows = statTypes
       .map((stat) => {
+        const valueForStat = (pet) => (stat.id === 0 ? petAttackPlusBonus(pet, petLevel) : petStatAtLevel(pet, stat.id, petLevel));
         const best = pets
           .slice()
-          .sort((a, b) => petStatAtLevel(b, stat.id, petLevel) - petStatAtLevel(a, stat.id, petLevel))[0];
-        const value = best ? petStatAtLevel(best, stat.id, petLevel) : 0;
-        return { stat, best, value };
+          .sort((a, b) => valueForStat(b) - valueForStat(a))[0];
+        const value = best ? valueForStat(best) : 0;
+        return { stat: stat.id === 0 ? { ...stat, name: "Attack Damage + passive" } : stat, best, value };
       })
       .filter((row) => row.value > 0);
 
@@ -294,18 +481,18 @@
 
     const topSkills = skills
       .slice()
-      .sort((a, b) => knownSkillAttack(b, skillLevel) - knownSkillAttack(a, skillLevel))
+      .sort((a, b) => skillDps(b, skillLevel) - skillDps(a, skillLevel))
       .slice(0, 10);
     els.overviewTopSkills.innerHTML = `
       <table class="mini-table">
-        <thead><tr><th>Skill</th><th>Rarity</th><th class="num">Base + bonus</th><th class="num">Cooldown</th></tr></thead>
+        <thead><tr><th>Skill</th><th>Rarity</th><th class="num">Base + bonus</th><th class="num">DPS</th><th class="num">Cooldown</th></tr></thead>
         <tbody>
           ${topSkills
             .map(
               (skill) =>
                 `<tr><td>${escapeHtml(skillName(skill))}</td><td>${rarityBadge(skill.rarity)}</td><td class="num">${formatNumber(
                   knownSkillAttack(skill, skillLevel)
-                )}</td><td class="num">${formatNumber(Number(skill.startedCooldown || 0))}s</td></tr>`
+                )}</td><td class="num">${formatNumber(skillDps(skill, skillLevel))}</td><td class="num">${formatNumber(Number(skill.startedCooldown || 0))}s</td></tr>`
             )
             .join("")}
         </tbody>
@@ -321,7 +508,27 @@
         value: (pet) => petName(pet),
         render: (pet) => renderNameCell(petName(pet), pet.gameObjectName || "")
       },
+      {
+        key: "icon",
+        label: "Icon",
+        value: (pet) => iconName(iconRecord("pet", pet.petNum)),
+        render: (pet) => renderIconCell(iconRecord("pet", pet.petNum))
+      },
       { key: "rarity", label: "Rarity", value: (pet) => Number(pet.rarity), render: (pet) => rarityBadge(pet.rarity) },
+      {
+        key: "passiveBonus",
+        label: "Passive bonus",
+        value: (pet) => petBonusDamage(pet, level),
+        render: (pet) => formatNumber(petBonusDamage(pet, level)),
+        className: "num"
+      },
+      {
+        key: "attackPlusBonus",
+        label: "Atk + bonus",
+        value: (pet) => petAttackPlusBonus(pet, level),
+        render: (pet) => formatNumber(petAttackPlusBonus(pet, level)),
+        className: "num"
+      },
       {
         key: "stats",
         label: "Stats at level",
@@ -351,11 +558,18 @@
         value: (skill) => skillName(skill),
         render: (skill) => renderNameCell(skillName(skill), skill.gameObjectName || "")
       },
+      {
+        key: "icon",
+        label: "Icon",
+        value: (skill) => iconName(iconRecord("skill", skill.skillNum)),
+        render: (skill) => renderIconCell(iconRecord("skill", skill.skillNum))
+      },
       { key: "rarity", label: "Rarity", value: (skill) => Number(skill.rarity), render: (skill) => rarityBadge(skill.rarity) },
       { key: "baseAttack", label: "Base", value: (skill) => Number(skill.baseAttack || 0), render: (skill) => formatNumber(Number(skill.baseAttack || 0)), className: "num" },
       { key: "bonus", label: "Bonus", value: (skill) => skillBonusDamage(skill, level), render: (skill) => formatNumber(skillBonusDamage(skill, level)), className: "num" },
       { key: "knownAttack", label: "Base + bonus", value: (skill) => knownSkillAttack(skill, level), render: (skill) => formatNumber(knownSkillAttack(skill, level)), className: "num" },
       { key: "chain", label: "Simple chain", value: (skill) => simpleSkillChain(skill, level), render: (skill) => formatNumber(simpleSkillChain(skill, level)), className: "num" },
+      { key: "dps", label: "DPS", value: (skill) => skillDps(skill, level), render: (skill) => formatNumber(skillDps(skill, level)), className: "num" },
       {
         key: "baseMultipleCount",
         label: "Multi",
@@ -384,7 +598,64 @@
         render: (skill) => nextExpLabel(skill, level, skillRequiredExp),
         className: "num"
       },
-      { key: "targetNedir", label: "Target", value: (skill) => Number(skill.targetNedir || 0), render: (skill) => `Target ${skill.targetNedir}`, className: "num" }
+      { key: "targetNedir", label: "Target", value: (skill) => Number(skill.targetNedir || 0), render: renderTargetCell }
+    ];
+  }
+
+  function wingColumns() {
+    return [
+      { key: "wingNum", label: "#", value: (wing) => Number(wing.wingNum), render: (wing) => String(wing.wingNum), className: "num" },
+      {
+        key: "name",
+        label: "Wing",
+        value: (wing) => wingName(wing),
+        render: (wing) => renderNameCell(wingName(wing), wing.gameObjectName || "")
+      },
+      {
+        key: "icon",
+        label: "Icon",
+        value: (wing) => iconName(iconRecord("wing", wing.wingNum)),
+        render: (wing) => renderIconCell(iconRecord("wing", wing.wingNum))
+      },
+      {
+        key: "sourcePathId",
+        label: "Source",
+        value: (wing) => Number(wing.sourcePathId || 0),
+        render: (wing) => String(wing.sourcePathId || ""),
+        className: "num"
+      }
+    ];
+  }
+
+  function mountColumns() {
+    return [
+      { key: "mountNum", label: "#", value: (mount) => Number(mount.mountNum), render: (mount) => String(mount.mountNum), className: "num" },
+      {
+        key: "name",
+        label: "Mount",
+        value: (mount) => mountName(mount),
+        render: (mount) => renderNameCell(mountName(mount), mount.gameObjectName || "")
+      },
+      {
+        key: "icon",
+        label: "Icon",
+        value: (mount) => iconName(iconRecord("mount", mount.mountNum)),
+        render: (mount) => renderIconCell(iconRecord("mount", mount.mountNum))
+      },
+      {
+        key: "objectPathId",
+        label: "Object",
+        value: (mount) => Number((mount.mountObject && mount.mountObject.pathId) || 0),
+        render: (mount) => String((mount.mountObject && mount.mountObject.pathId) || ""),
+        className: "num"
+      },
+      {
+        key: "sourcePathId",
+        label: "Source",
+        value: (mount) => Number(mount.sourcePathId || 0),
+        render: (mount) => String(mount.sourcePathId || ""),
+        className: "num"
+      }
     ];
   }
 
@@ -418,6 +689,7 @@
         petName(pet),
         pet.gameObjectName,
         rarityLabel(pet.rarity),
+        iconName(iconRecord("pet", pet.petNum)),
         ...(pet.stats || []).map((stat) => statLabel(stat.statType, false))
       ]
         .join(" ")
@@ -432,7 +704,48 @@
     return skills.filter((skill) => {
       if (rarity !== "all" && String(skill.rarity) !== rarity) return false;
       if (!query) return true;
-      const haystack = [skillName(skill), skill.gameObjectName, rarityLabel(skill.rarity), `target ${skill.targetNedir}`]
+      const haystack = [
+        skillName(skill),
+        skill.gameObjectName,
+        rarityLabel(skill.rarity),
+        iconName(iconRecord("skill", skill.skillNum)),
+        `target ${skill.targetNedir}`,
+        targetInfo(skill.targetNedir).label
+      ]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(query);
+    });
+  }
+
+  function filterWings() {
+    const query = els.wingSearch.value.trim().toLowerCase();
+    return wings.filter((wing) => {
+      if (!query) return true;
+      const record = iconRecord("wing", wing.wingNum);
+      const haystack = [
+        wingName(wing),
+        wing.gameObjectName,
+        iconName(record),
+        record && record.sprite && record.sprite.texture ? record.sprite.texture.name : ""
+      ]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(query);
+    });
+  }
+
+  function filterMounts() {
+    const query = els.mountSearch.value.trim().toLowerCase();
+    return mounts.filter((mount) => {
+      if (!query) return true;
+      const record = iconRecord("mount", mount.mountNum);
+      const haystack = [
+        mountName(mount),
+        mount.gameObjectName,
+        iconName(record),
+        record && record.sprite && record.sprite.texture ? record.sprite.texture.name : ""
+      ]
         .join(" ")
         .toLowerCase();
       return haystack.includes(query);
@@ -475,6 +788,243 @@
       .join("");
   }
 
+  function renderWingsTable() {
+    const columns = wingColumns();
+    const filtered = filterWings();
+    const rows = sortRows(filtered, columns, state.wingSort);
+    els.wingTableMeta.textContent = `${filtered.length} of ${wings.length} wings`;
+    els.wingTableHead.innerHTML = renderSortableHeader(columns, state.wingSort);
+    els.wingTableBody.innerHTML = rows
+      .map(
+        (wing) =>
+          `<tr>${columns
+            .map((column) => `<td${column.className ? ` class="${escapeHtml(column.className)}"` : ""}>${column.render(wing)}</td>`)
+            .join("")}</tr>`
+      )
+      .join("");
+  }
+
+  function renderMountsTable() {
+    const columns = mountColumns();
+    const filtered = filterMounts();
+    const rows = sortRows(filtered, columns, state.mountSort);
+    els.mountTableMeta.textContent = `${filtered.length} of ${mounts.length} mounts`;
+    els.mountTableHead.innerHTML = renderSortableHeader(columns, state.mountSort);
+    els.mountTableBody.innerHTML = rows
+      .map(
+        (mount) =>
+          `<tr>${columns
+            .map((column) => `<td${column.className ? ` class="${escapeHtml(column.className)}"` : ""}>${column.render(mount)}</td>`)
+            .join("")}</tr>`
+      )
+      .join("");
+  }
+
+  function compactValue(value) {
+    if (value == null || value === "") return "";
+    if (Array.isArray(value)) return value.join(", ");
+    if (typeof value === "object") {
+      return Object.entries(value)
+        .map(([key, amount]) => `${key}: ${formatNumber(Number(amount))}`)
+        .join(", ");
+    }
+    return String(value);
+  }
+
+  function eventRows() {
+    const rows = [];
+    (events.managers || []).forEach((manager) => {
+      rows.push({
+        category: "Manager",
+        id: manager.gameObjectName || "CrocodileManager",
+        detail: "Info endpoint",
+        value: manager.eventInfoEndpoint || "",
+        sourcePathId: manager.sourcePathId || ""
+      });
+      rows.push({
+        category: "Manager",
+        id: manager.gameObjectName || "CrocodileManager",
+        detail: "Summon endpoint",
+        value: manager.eventSummonEndpoint || "",
+        sourcePathId: manager.sourcePathId || ""
+      });
+      rows.push({
+        category: "Manager",
+        id: manager.gameObjectName || "CrocodileManager",
+        detail: "Action endpoint",
+        value: manager.eventActionEndpoint || "",
+        sourcePathId: manager.sourcePathId || ""
+      });
+      if (Array.isArray(manager.rewardKeys) && manager.rewardKeys.length) {
+        rows.push({
+          category: "Manager",
+          id: manager.gameObjectName || "CrocodileManager",
+          detail: "Reward keys",
+          value: manager.rewardKeys.join(", "),
+          sourcePathId: manager.sourcePathId || ""
+        });
+      }
+    });
+    (events.missions || []).forEach((mission) => {
+      rows.push({
+        category: "Mission",
+        id: mission.missionId || "",
+        detail: mission.gameObjectName || "",
+        value: `dynamicTarget ${mission.dynamicTarget || 0}`,
+        sourcePathId: mission.sourcePathId || ""
+      });
+    });
+    (events.exchanges || []).forEach((exchange) => {
+      rows.push({
+        category: "Exchange",
+        id: exchange.exchangeId || "",
+        detail: exchange.gameObjectName || "",
+        value: "",
+        sourcePathId: exchange.sourcePathId || ""
+      });
+    });
+    (events.crafts || []).forEach((craft) => {
+      rows.push({
+        category: "Craft",
+        id: craft.craftId || "",
+        detail: craft.gameObjectName || "",
+        value: `limit ${craft.dailyLimit || 0}, cost ${craft.craftCost || 0}`,
+        sourcePathId: craft.sourcePathId || ""
+      });
+    });
+    (events.milestones || []).forEach((milestone) => {
+      rows.push({
+        category: "Milestone",
+        id: `Summon ${milestone.targetSummon || 0}`,
+        detail: milestone.gameObjectName || "",
+        value: "",
+        sourcePathId: milestone.sourcePathId || ""
+      });
+    });
+    return rows;
+  }
+
+  function baseRows() {
+    return baseData.buildings || [];
+  }
+
+  function pvpRows() {
+    const rows = [];
+    (pvpRewards.tiers || []).forEach((tier) => {
+      (tier.rewards || []).forEach((reward) => {
+        rows.push({
+          tier: tier.tier,
+          leagueName: tier.leagueName || `Tier ${tier.tier}`,
+          rankThreshold: reward.rankThreshold,
+          rewards: reward.rewards || {}
+        });
+      });
+    });
+    return rows;
+  }
+
+  function rarityRows() {
+    return rarityUpgrades.levels || [];
+  }
+
+  function renderStaticTable(metaEl, headEl, bodyEl, rows, columns, sortState, label, note) {
+    if (!metaEl || !headEl || !bodyEl) return;
+    const sorted = sortRows(rows, columns, sortState);
+    metaEl.textContent = `${rows.length} ${label}${note ? ` - ${note}` : ""}`;
+    headEl.innerHTML = renderSortableHeader(columns, sortState);
+    bodyEl.innerHTML = sorted
+      .map(
+        (row) =>
+          `<tr>${columns
+            .map((column) => `<td${column.className ? ` class="${escapeHtml(column.className)}"` : ""}>${column.render(row)}</td>`)
+            .join("")}</tr>`
+      )
+      .join("");
+  }
+
+  function renderEventTable() {
+    const columns = [
+      { key: "category", label: "Category", value: (row) => row.category, render: (row) => escapeHtml(row.category) },
+      { key: "id", label: "ID", value: (row) => row.id, render: (row) => escapeHtml(row.id) },
+      { key: "detail", label: "Detail", value: (row) => row.detail, render: (row) => escapeHtml(row.detail) },
+      { key: "value", label: "Value", value: (row) => row.value, render: (row) => escapeHtml(row.value) },
+      { key: "sourcePathId", label: "Source", value: (row) => Number(row.sourcePathId || 0), render: (row) => escapeHtml(row.sourcePathId), className: "num" }
+    ];
+    renderStaticTable(els.eventTableMeta, els.eventTableHead, els.eventTableBody, eventRows(), columns, state.eventSort, "event records", events.note || "");
+  }
+
+  function renderBaseTable() {
+    const columns = [
+      { key: "id", label: "ID", value: (row) => Number(row.id || 0), render: (row) => String(row.id || ""), className: "num" },
+      { key: "name", label: "Building", value: (row) => row.name, render: (row) => renderNameCell(row.name || `Building ${row.id}`, row.description || "") },
+      { key: "bonusPrefix", label: "Bonus", value: (row) => row.bonusPrefix, render: (row) => escapeHtml(row.bonusPrefix || "") },
+      {
+        key: "bonusPerLevel",
+        label: "Per level",
+        value: (row) => Number(row.bonusPerLevel || 0),
+        render: (row) => formatNumber(Number(row.bonusPerLevel || 0)),
+        className: "num"
+      },
+      { key: "costs", label: "Costs", value: (row) => compactValue(row.costs), render: (row) => escapeHtml(compactValue(row.costs)) },
+      { key: "times", label: "Times", value: (row) => compactValue(row.times), render: (row) => escapeHtml(compactValue(row.times)) },
+      {
+        key: "labelSource",
+        label: "Label source",
+        value: (row) => row.labelSource || "",
+        render: (row) => renderNameCell(row.labelSource || "", row.nameSlot || "")
+      }
+    ];
+    renderStaticTable(els.baseTableMeta, els.baseTableHead, els.baseTableBody, baseRows(), columns, state.baseSort, "base records", baseData.note || "");
+  }
+
+  function renderPvpTable() {
+    const columns = [
+      { key: "tier", label: "Tier", value: (row) => Number(row.tier || 0), render: (row) => String(row.tier || ""), className: "num" },
+      { key: "leagueName", label: "League", value: (row) => row.leagueName, render: (row) => escapeHtml(row.leagueName || "") },
+      {
+        key: "rankThreshold",
+        label: "Rank <=",
+        value: (row) => Number(row.rankThreshold || 0),
+        render: (row) => formatNumber(Number(row.rankThreshold || 0)),
+        className: "num"
+      },
+      { key: "rewards", label: "Rewards", value: (row) => compactValue(row.rewards), render: (row) => escapeHtml(compactValue(row.rewards)) }
+    ];
+    renderStaticTable(els.pvpTableMeta, els.pvpTableHead, els.pvpTableBody, pvpRows(), columns, state.pvpSort, "PvP reward rows", pvpRewards.note || "");
+  }
+
+  function renderRarityTable() {
+    const columns = [
+      { key: "level", label: "Level", value: (row) => Number(row.level || 0), render: (row) => String(row.level || ""), className: "num" },
+      {
+        key: "requirement",
+        label: "Requirement",
+        value: (row) => Number(row.requirement || 0),
+        render: (row) => formatNumber(Number(row.requirement || 0)),
+        className: "num"
+      },
+      { key: "minutes", label: "Minutes", value: (row) => Number(row.minutes || 0), render: (row) => formatNumber(Number(row.minutes || 0)), className: "num" },
+      { key: "coinPrice", label: "Coin price", value: (row) => Number(row.coinPrice || 0), render: (row) => formatNumber(Number(row.coinPrice || 0)), className: "num" },
+      {
+        key: "crystalSkipPrice",
+        label: "Crystal skip",
+        value: (row) => Number(row.crystalSkipPrice || 0),
+        render: (row) => formatNumber(Number(row.crystalSkipPrice || 0)),
+        className: "num"
+      }
+    ];
+    renderStaticTable(
+      els.rarityTableMeta,
+      els.rarityTableHead,
+      els.rarityTableBody,
+      rarityRows(),
+      columns,
+      state.raritySort,
+      "rarity upgrade levels",
+      rarityUpgrades.note || ""
+    );
+  }
+
   function renderSkillCalculator() {
     const skill = skills.find((item) => String(item.skillNum) === String(els.skillCalcSelect.value)) || skills[0];
     const level = clamp(els.skillCalcLevel.value, 0, Number(skill ? skill.maxLevel || 100 : 100));
@@ -489,6 +1039,8 @@
     const bonus = skillBonusDamage(skill, level);
     const attack = knownSkillAttack(skill, level);
     const chain = simpleSkillChain(skill, level);
+    const dps = skillDps(skill, level);
+    const target = targetInfo(skill.targetNedir);
     const totalExp = totalExpToLevel(level, skillRequiredExp);
     els.skillCalcMetrics.innerHTML = [
       renderMetric("Skill", skillName(skill), rarityLabel(skill.rarity)),
@@ -496,7 +1048,9 @@
       renderMetric("Bonus damage", formatNumber(bonus), `${rarityLabel(skill.rarity)} x ${rarityMultiplier[skill.rarity] || 0}`),
       renderMetric("Base + bonus", formatNumber(attack), "Recovered scalar only"),
       renderMetric("Simple chain", formatNumber(chain), "Base + bonus x multi x bounce"),
-      renderMetric("Cooldown", `${formatNumber(Number(skill.startedCooldown || 0))}s`, `Target ${skill.targetNedir}`),
+      renderMetric("DPS", formatNumber(dps), "Simple chain / cooldown"),
+      renderMetric("Cooldown", `${formatNumber(Number(skill.startedCooldown || 0))}s`, `${target.label} (${skill.targetNedir})`),
+      renderMetric("Target", target.label, target.detail),
       renderMetric("Multiple count", formatNumber(Number(skill.baseMultipleCount || 0)), "Extracted field"),
       renderMetric("Bounce count", formatNumber(Number(skill.baseBounceCount || 0)), "Extracted field"),
       renderMetric("Next EXP", nextExpLabel(skill, level, skillRequiredExp), level >= Number(skill.maxLevel || 100) ? "Max level" : `For level ${level}`),
@@ -505,38 +1059,52 @@
   }
 
   function initializePetBuild() {
-    pets.forEach((pet) => state.petBuildLevels.set(pet.petNum, Number(pet.maxLevel || 100)));
+    pets.forEach((pet) => state.petBuildLevels.set(pet.petNum, 0));
     pets
       .slice()
-      .sort((a, b) => petStatAtLevel(b, 0, 100) - petStatAtLevel(a, 0, 100))
+      .sort((a, b) => petAttackPlusBonus(b, 0) - petAttackPlusBonus(a, 0))
       .slice(0, 3)
       .forEach((pet) => state.selectedPets.add(pet.petNum));
   }
 
   function aggregatePetStats() {
     const totals = new Map(statTypes.map((stat) => [stat.id, 0]));
+    let passiveBonus = 0;
+    let rawAttack = 0;
     pets.forEach((pet) => {
       if (!state.selectedPets.has(pet.petNum)) return;
       const level = state.petBuildLevels.get(pet.petNum) || 0;
+      passiveBonus += petBonusDamage(pet, level);
       (pet.stats || []).forEach((stat) => {
-        totals.set(stat.statType, (totals.get(stat.statType) || 0) + petStatValue(stat.baseValue, stat.statType, level));
+        const value = petStatValue(stat.baseValue, stat.statType, level);
+        if (Number(stat.statType) === 0) rawAttack += value;
+        totals.set(stat.statType, (totals.get(stat.statType) || 0) + value);
       });
     });
-    return totals;
+    return { totals, passiveBonus, attackPlusBonus: rawAttack + passiveBonus };
   }
 
   function renderPetBuildTotals() {
-    const totals = aggregatePetStats();
+    const aggregate = aggregatePetStats();
+    const totals = aggregate.totals;
     const selectedCount = state.selectedPets.size;
     els.petBuildMeta.textContent = `${selectedCount} selected`;
-    els.petBuildTotals.innerHTML = statTypes
+    const bonusTotals = [
+      `<div class="stat-total"><div class="label">Passive bonus</div><div class="value">${formatNumber(
+        aggregate.passiveBonus
+      )}</div><div class="sub">${selectedCount ? "Selected pets" : "No pets selected"}</div></div>`,
+      `<div class="stat-total"><div class="label">Attack + bonus</div><div class="value">${formatNumber(
+        aggregate.attackPlusBonus
+      )}</div><div class="sub">${selectedCount ? "Selected pets" : "No pets selected"}</div></div>`
+    ];
+    els.petBuildTotals.innerHTML = bonusTotals.concat(statTypes
       .map((stat) => {
         const value = totals.get(stat.id) || 0;
         return `<div class="stat-total"><div class="label">${escapeHtml(stat.name)}</div><div class="value">${formatNumber(value)}</div><div class="sub">${
           selectedCount ? "Selected pets" : "No pets selected"
         }</div></div>`;
       })
-      .join("");
+    ).join("");
   }
 
   function renderPetBuildTable() {
@@ -568,10 +1136,11 @@
 
   function selectTopPetsByStat(statType, count) {
     const level = clamp(els.petBuildLevel.value, 0, 100);
+    const valueAtLevel = (pet) => (Number(statType) === 0 ? petAttackPlusBonus(pet, level) : petStatAtLevel(pet, statType, level));
     const selected = pets
       .slice()
-      .sort((a, b) => petStatAtLevel(b, statType, level) - petStatAtLevel(a, statType, level))
-      .filter((pet) => petStatAtLevel(pet, statType, level) > 0)
+      .sort((a, b) => valueAtLevel(b) - valueAtLevel(a))
+      .filter((pet) => valueAtLevel(pet) > 0)
       .slice(0, count)
       .map((pet) => pet.petNum);
     setSelectedPets(selected);
@@ -587,6 +1156,17 @@
     els.tabs.forEach((tab) => {
       tab.addEventListener("click", () => setActiveView(tab.dataset.view));
     });
+
+    document.addEventListener("pointerover", (event) => {
+      const cell = event.target.closest(".icon-only[data-icon-category]");
+      if (cell) showIconZoom(cell);
+    });
+    document.addEventListener("pointerout", (event) => {
+      const cell = event.target.closest(".icon-only[data-icon-category]");
+      if (cell && (!event.relatedTarget || !cell.contains(event.relatedTarget))) hideIconZoom();
+    });
+    window.addEventListener("scroll", hideIconZoom, true);
+    window.addEventListener("resize", hideIconZoom);
 
     [els.overviewPetLevel, els.overviewSkillLevel].forEach((input) => input.addEventListener("input", renderOverview));
 
@@ -612,6 +1192,49 @@
         dir: state.skillSort.key === key && state.skillSort.dir === "asc" ? "desc" : "asc"
       };
       renderSkillsTable();
+    });
+
+    els.wingSearch.addEventListener("input", renderWingsTable);
+    els.wingTableHead.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-sort]");
+      if (!button) return;
+      const key = button.dataset.sort;
+      state.wingSort = {
+        key,
+        dir: state.wingSort.key === key && state.wingSort.dir === "asc" ? "desc" : "asc"
+      };
+      renderWingsTable();
+    });
+
+    els.mountSearch.addEventListener("input", renderMountsTable);
+    els.mountTableHead.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-sort]");
+      if (!button) return;
+      const key = button.dataset.sort;
+      state.mountSort = {
+        key,
+        dir: state.mountSort.key === key && state.mountSort.dir === "asc" ? "desc" : "asc"
+      };
+      renderMountsTable();
+    });
+
+    [
+      { head: els.eventTableHead, sortKey: "eventSort", render: renderEventTable },
+      { head: els.baseTableHead, sortKey: "baseSort", render: renderBaseTable },
+      { head: els.pvpTableHead, sortKey: "pvpSort", render: renderPvpTable },
+      { head: els.rarityTableHead, sortKey: "raritySort", render: renderRarityTable }
+    ].forEach((table) => {
+      if (!table.head) return;
+      table.head.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-sort]");
+        if (!button) return;
+        const key = button.dataset.sort;
+        state[table.sortKey] = {
+          key,
+          dir: state[table.sortKey].key === key && state[table.sortKey].dir === "asc" ? "desc" : "asc"
+        };
+        table.render();
+      });
     });
 
     els.skillCalcSelect.addEventListener("change", renderSkillCalculator);
@@ -661,13 +1284,19 @@
   }
 
   function init() {
-    els.datasetStats.textContent = `${pets.length} pets, ${skills.length} skills, recovered level scaling`;
+    els.datasetStats.textContent = `${pets.length} pets, ${skills.length} skills, ${wings.length} wings, ${mounts.length} mounts, recovered level scaling`;
     setupFilters();
     initializePetBuild();
     bindEvents();
     renderOverview();
     renderPetsTable();
     renderSkillsTable();
+    renderWingsTable();
+    renderMountsTable();
+    renderEventTable();
+    renderBaseTable();
+    renderPvpTable();
+    renderRarityTable();
     renderSkillCalculator();
     renderPetBuildTable();
   }

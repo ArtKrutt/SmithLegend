@@ -19,7 +19,13 @@
           <button class="tab is-active" type="button" data-view="overview">Overview</button>
           <button class="tab" type="button" data-view="pets">Pets</button>
           <button class="tab" type="button" data-view="skills">Skills</button>
+          <button class="tab" type="button" data-view="wings">Wings</button>
+          <button class="tab" type="button" data-view="mounts">Mounts</button>
           <button class="tab" type="button" data-view="calculator">Calculator</button>
+          <button class="tab" type="button" data-view="events">Events</button>
+          <button class="tab" type="button" data-view="base">Base</button>
+          <button class="tab" type="button" data-view="pvp">PvP</button>
+          <button class="tab" type="button" data-view="rarity">Rarity</button>
           <button class="tab" type="button" data-view="formulas">Formulas</button>
         </nav>
       </header>
@@ -28,12 +34,12 @@
         <section id="overviewView" class="view is-active" data-view-panel="overview">
           <div class="toolbar">
             <label class="control control-range">
-              <span>Pet level <output id="overviewPetLevelOut">100</output></span>
-              <input id="overviewPetLevel" type="range" min="0" max="100" value="100">
+              <span>Pet level <output id="overviewPetLevelOut">0</output></span>
+              <input id="overviewPetLevel" type="range" min="0" max="100" value="0">
             </label>
             <label class="control control-range">
-              <span>Skill level <output id="overviewSkillLevelOut">100</output></span>
-              <input id="overviewSkillLevel" type="range" min="0" max="100" value="100">
+              <span>Skill level <output id="overviewSkillLevelOut">0</output></span>
+              <input id="overviewSkillLevel" type="range" min="0" max="100" value="0">
             </label>
           </div>
 
@@ -71,8 +77,8 @@
               <select id="petStatFilter"></select>
             </label>
             <label class="control control-range">
-              <span>Level <output id="petLevelOut">100</output></span>
-              <input id="petLevel" type="range" min="0" max="100" value="100">
+              <span>Level <output id="petLevelOut">0</output></span>
+              <input id="petLevel" type="range" min="0" max="100" value="0">
             </label>
           </div>
           <div class="table-meta" id="petTableMeta"></div>
@@ -95,15 +101,48 @@
               <select id="skillRarityFilter"></select>
             </label>
             <label class="control control-range">
-              <span>Level <output id="skillLevelOut">100</output></span>
-              <input id="skillLevel" type="range" min="0" max="100" value="100">
+              <span>Level <output id="skillLevelOut">0</output></span>
+              <input id="skillLevel" type="range" min="0" max="100" value="0">
             </label>
           </div>
+          <div class="table-meta">Target X is the recovered internal skill target mode: 0 and 1 both show the generic in-game target label, 2 is Highest HP, and 3 is Random enemy.</div>
           <div class="table-meta" id="skillTableMeta"></div>
           <div class="table-wrap">
             <table class="data-table" id="skillTable">
               <thead id="skillTableHead"></thead>
               <tbody id="skillTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="wingsView" class="view" data-view-panel="wings">
+          <div class="toolbar">
+            <label class="control">
+              <span>Search</span>
+              <input id="wingSearch" type="search" placeholder="Wing, sprite">
+            </label>
+          </div>
+          <div class="table-meta" id="wingTableMeta"></div>
+          <div class="table-wrap">
+            <table class="data-table" id="wingTable">
+              <thead id="wingTableHead"></thead>
+              <tbody id="wingTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="mountsView" class="view" data-view-panel="mounts">
+          <div class="toolbar">
+            <label class="control">
+              <span>Search</span>
+              <input id="mountSearch" type="search" placeholder="Mount, sprite">
+            </label>
+          </div>
+          <div class="table-meta" id="mountTableMeta"></div>
+          <div class="table-wrap">
+            <table class="data-table" id="mountTable">
+              <thead id="mountTableHead"></thead>
+              <tbody id="mountTableBody"></tbody>
             </table>
           </div>
         </section>
@@ -120,12 +159,12 @@
                   <select id="skillCalcSelect"></select>
                 </label>
                 <label class="control control-range">
-                  <span>Level <output id="skillCalcLevelOut">100</output></span>
-                  <input id="skillCalcLevel" type="range" min="0" max="100" value="100">
+                  <span>Level <output id="skillCalcLevelOut">0</output></span>
+                  <input id="skillCalcLevel" type="range" min="0" max="100" value="0">
                 </label>
                 <label class="control number-control">
                   <span>Exact level</span>
-                  <input id="skillCalcLevelNumber" type="number" min="0" max="100" value="100">
+                  <input id="skillCalcLevelNumber" type="number" min="0" max="100" value="0">
                 </label>
               </div>
               <div id="skillCalcMetrics" class="metric-grid"></div>
@@ -137,8 +176,8 @@
               </div>
               <div class="calc-controls">
                 <label class="control control-range">
-                  <span>Set selected level <output id="petBuildLevelOut">100</output></span>
-                  <input id="petBuildLevel" type="range" min="0" max="100" value="100">
+                  <span>Set selected level <output id="petBuildLevelOut">0</output></span>
+                  <input id="petBuildLevel" type="range" min="0" max="100" value="0">
                 </label>
                 <div class="button-row">
                   <button id="selectAllPets" type="button">All</button>
@@ -173,6 +212,46 @@
           </section>
         </section>
 
+        <section id="eventsView" class="view" data-view-panel="events">
+          <div class="table-meta" id="eventTableMeta"></div>
+          <div class="table-wrap">
+            <table class="data-table" id="eventTable">
+              <thead id="eventTableHead"></thead>
+              <tbody id="eventTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="baseView" class="view" data-view-panel="base">
+          <div class="table-meta" id="baseTableMeta"></div>
+          <div class="table-wrap">
+            <table class="data-table" id="baseTable">
+              <thead id="baseTableHead"></thead>
+              <tbody id="baseTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="pvpView" class="view" data-view-panel="pvp">
+          <div class="table-meta" id="pvpTableMeta"></div>
+          <div class="table-wrap">
+            <table class="data-table" id="pvpTable">
+              <thead id="pvpTableHead"></thead>
+              <tbody id="pvpTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="rarityView" class="view" data-view-panel="rarity">
+          <div class="table-meta" id="rarityTableMeta"></div>
+          <div class="table-wrap">
+            <table class="data-table" id="rarityTable">
+              <thead id="rarityTableHead"></thead>
+              <tbody id="rarityTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
         <section id="formulasView" class="view" data-view-panel="formulas">
           <div class="two-col">
             <section class="data-panel">
@@ -195,7 +274,13 @@ statValue(level, baseValue, statType) =
 
 denominator:
   AttackDamage = 10
-  all other pet stats = 25</pre>
+  all other pet stats = 25
+
+passiveBonus(level, rarity) =
+  level * rarityMultiplier
+
+attack + bonus =
+  AttackDamage statValue + passiveBonus</pre>
             </section>
 
             <section class="data-panel">
@@ -218,16 +303,81 @@ rarityMultiplier:
   Mystic    = 15
 
 bonusDamage(level, rarity) =
-  level * rarityMultiplier</pre>
+  level * rarityMultiplier
+
+base + bonus =
+  baseAttack + bonusDamage
+
+simpleChain =
+  base + bonus x multipleCount x bounceCount
+
+DPS =
+  simpleChain / cooldown
+
+Target X:
+  0 and 1 = generic in-game Target label
+  2       = Highest HP
+  3       = Random enemy</pre>
             </section>
           </div>
+
+          <section class="data-panel">
+            <div class="panel-head">
+              <h2>Wing Data</h2>
+            </div>
+            <pre class="formula-box">Extracted template fields:
+  WingNum
+  WingName
+  WingIcon
+
+Runtime instance fields:
+  id, wingNum, rarity, level, currentExp, stats
+
+Known native formulas:
+  RarityGrowth = [30, 60, 90, 130, 200]
+  RarityMaxExps = [40, 60, 80, 100, 120]
+
+  MaxExp() = RarityMaxExps[rarity] * level
+
+  GetStatValueAtLevel(type, targetLevel) =
+    matchedStat.value + RarityGrowth[rarity] * (targetLevel - 1)
+
+The fixed templates do not include base stats. WingInstance.stats is loaded from the
+wings service response, so actual wing stat rolls appear server/generated.</pre>
+          </section>
+
+          <section class="data-panel">
+            <div class="panel-head">
+              <h2>Mount Data</h2>
+            </div>
+            <pre class="formula-box">Extracted template fields:
+  MountNum
+  MountName
+  MountIcon
+  MountObj
+
+Runtime instance fields:
+  id, mountNum, rarity, level, currentExp, stats
+
+Known native formulas:
+  RarityGrowth = [2, 4, 6, 8, 10]
+  RarityMaxExps = [50, 70, 90, 110, 130]
+
+  MaxExp() = RarityMaxExps[rarity] * level
+
+  GetStatValueAtLevel(type, targetLevel) =
+    matchedStat.value + RarityGrowth[rarity] * (targetLevel - 1)
+
+The fixed templates do not include base stats. MountInstance.stats is loaded from
+the mounts service response, actual mount stat rolls are server/generated.</pre>
+          </section>
 
           <section class="data-panel">
             <div class="panel-head">
               <h2>Known Limits</h2>
             </div>
             <p class="notes">
-              Skill Base + bonus uses the recovered Skill.BonusDamage method. Simple chain multiplies that value by extracted multiple and bounce counts. Skill.AttackForText and Skill.BackgroundPattern also touch behavior objects and PvP/game-state data, so those runtime parts are not included here.
+              Skill Base + bonus uses the recovered Skill.BonusDamage method. Simple chain multiplies that value by extracted multiple and bounce counts. Skill.AttackForText and Skill.BackgroundPattern also touch behavior objects and PvP/game-state data, so those runtime parts are not included here. Rarity upgrade per-level cost and time arrays are loaded through GearConfigDTO/server config; the APK only exposes crystalPricePerMinute = 2 and MaxRarityLevel = 90.
             </p>
           </section>
         </section>
