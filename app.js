@@ -1059,7 +1059,7 @@
   }
 
   function initializePetBuild() {
-    pets.forEach((pet) => state.petBuildLevels.set(pet.petNum, 0));
+    pets.forEach((pet) => state.petBuildLevels.set(pet.petNum, 10));
     pets
       .slice()
       .sort((a, b) => petAttackPlusBonus(b, 0) - petAttackPlusBonus(a, 0))
@@ -1111,7 +1111,7 @@
     els.petBuildBody.innerHTML = pets
       .map((pet) => {
         const checked = state.selectedPets.has(pet.petNum) ? " checked" : "";
-        const level = state.petBuildLevels.get(pet.petNum) || 0;
+        const level = state.petBuildLevels.get(pet.petNum) ?? 10;
         return `<tr>
           <td class="check-cell"><input type="checkbox" data-pet-check="${pet.petNum}"${checked}></td>
           <td>${renderNameCell(petName(pet), pet.gameObjectName || "")}</td>
