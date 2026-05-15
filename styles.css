@@ -308,8 +308,12 @@ tbody tr:hover {
   width: 1%;
 }
 
+.icon-col {
+  width: 74px;
+}
+
 .level-col {
-  width: 240px;
+  width: 280px;
 }
 
 .name-cell {
@@ -466,16 +470,23 @@ tbody tr:hover {
   font-size: 0.8rem;
 }
 
+.build-panel,
 .pet-build-panel {
   margin-top: 16px;
 }
 
+.build-table {
+  min-width: 1120px;
+  table-layout: fixed;
+}
+
 .pet-level-control {
   display: grid;
-  grid-template-columns: 1fr 48px;
+  grid-template-columns: 200px 48px;
   gap: 8px;
   align-items: center;
-  min-width: 220px;
+  width: 264px;
+  min-width: 264px;
 }
 
 .pet-level-control input[type="range"] {
@@ -537,6 +548,12 @@ tbody tr:hover {
 
   .control,
   .control-range {
+    min-width: 0;
+  }
+
+  .pet-level-control {
+    grid-template-columns: minmax(140px, 1fr) 48px;
+    width: 100%;
     min-width: 0;
   }
 

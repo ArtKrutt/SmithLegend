@@ -9,7 +9,6 @@
   const events = source.events || {};
   const baseData = source.base || {};
   const pvpRewards = source.pvpRewards || {};
-  const rarityUpgrades = source.rarityUpgrades || {};
   const iconRecords = source.icons && Array.isArray(source.icons.records) ? source.icons.records : [];
   const iconByKey = new Map(iconRecords.map((record) => [`${record.category}:${record.id}`, record]));
   let iconZoomEl = null;
@@ -17,6 +16,7 @@
   const rarityNames = ["Common", "Rare", "Epic", "Legendary", "Mystic"];
   const rarityClass = ["common", "rare", "epic", "legendary", "mystic"];
   const rarityMultiplier = [1, 2, 5, 10, 15];
+  const defaultLevel = 10;
   const statTypes = [
     { id: 0, name: "Attack Damage", short: "Atk" },
     { id: 1, name: "Attack Speed", short: "Atk Spd" },
@@ -41,7 +41,8 @@
     eventSort: { key: "category", dir: "asc" },
     baseSort: { key: "id", dir: "asc" },
     pvpSort: { key: "tier", dir: "asc" },
-    raritySort: { key: "level", dir: "asc" },
+    skillBuildLevels: new Map(),
+    selectedSkills: new Set(),
     petBuildLevels: new Map(),
     selectedPets: new Set()
   };
@@ -89,14 +90,15 @@
     pvpTableMeta: document.getElementById("pvpTableMeta"),
     pvpTableHead: document.getElementById("pvpTableHead"),
     pvpTableBody: document.getElementById("pvpTableBody"),
-    rarityTableMeta: document.getElementById("rarityTableMeta"),
-    rarityTableHead: document.getElementById("rarityTableHead"),
-    rarityTableBody: document.getElementById("rarityTableBody"),
-    skillCalcSelect: document.getElementById("skillCalcSelect"),
-    skillCalcLevel: document.getElementById("skillCalcLevel"),
-    skillCalcLevelOut: document.getElementById("skillCalcLevelOut"),
-    skillCalcLevelNumber: document.getElementById("skillCalcLevelNumber"),
-    skillCalcMetrics: document.getElementById("skillCalcMetrics"),
+    skillBuildLevel: document.getElementById("skillBuildLevel"),
+    skillBuildLevelOut: document.getElementById("skillBuildLevelOut"),
+    selectAllSkills: document.getElementById("selectAllSkills"),
+    clearSkills: document.getElementById("clearSkills"),
+    topDpsSkills: document.getElementById("topDpsSkills"),
+    topAttackSkills: document.getElementById("topAttackSkills"),
+    skillBuildTotals: document.getElementById("skillBuildTotals"),
+    skillBuildBody: document.getElementById("skillBuildBody"),
+    skillBuildMeta: document.getElementById("skillBuildMeta"),
     petBuildLevel: document.getElementById("petBuildLevel"),
     petBuildLevelOut: document.getElementById("petBuildLevelOut"),
     selectAllPets: document.getElementById("selectAllPets"),
@@ -382,6 +384,25 @@
     )}</strong></span><span class="stat-chip bonus-chip"><span>Atk+Bonus</span><strong>${formatNumber(attackPlusBonus)}</strong></span>`;
   }
 
+  function statChipsForSkill(skill, level) {
+    const target = targetInfo(skill.targetNedir);
+    const bonus = skillBonusDamage(skill, level);
+    const attack = knownSkillAttack(skill, level);
+    const chain = simpleSkillChain(skill, level);
+    const dps = skillDps(skill, level);
+    const cooldown = Number(skill.startedCooldown || 0);
+    return [
+      `<span class="stat-chip"><span>Base</span><strong>${formatNumber(Number(skill.baseAttack || 0))}</strong></span>`,
+      `<span class="stat-chip bonus-chip"><span>Bonus</span><strong>${formatNumber(bonus)}</strong></span>`,
+      `<span class="stat-chip bonus-chip"><span>Base+Bonus</span><strong>${formatNumber(attack)}</strong></span>`,
+      `<span class="stat-chip"><span>Chain</span><strong>${formatNumber(chain)}</strong></span>`,
+      `<span class="stat-chip"><span>DPS</span><strong>${formatNumber(dps)}</strong></span>`,
+      `<span class="stat-chip"><span>CD</span><strong>${formatNumber(cooldown)}s</strong></span>`,
+      `<span class="stat-chip"><span>Target</span><strong>${escapeHtml(target.label)} ${escapeHtml(`(${skill.targetNedir})`)}</strong></span>`,
+      `<span class="stat-chip"><span>Next EXP</span><strong>${nextExpLabel(skill, level, skillRequiredExp)}</strong></span>`
+    ].join("");
+  }
+
   function renderNameCell(main, sub) {
     return `<div class="name-cell"><span class="name-main">${escapeHtml(main)}</span><span class="name-sub">${escapeHtml(sub)}</span></div>`;
   }
@@ -405,11 +426,6 @@
       els.petStatFilter,
       [{ value: "all", label: "All stats" }].concat(statTypes.map((stat) => ({ value: String(stat.id), label: stat.name }))),
       "all"
-    );
-    setOptions(
-      els.skillCalcSelect,
-      skills.map((skill) => ({ value: String(skill.skillNum), label: `${skill.skillNum}. ${skillName(skill)} (${rarityLabel(skill.rarity)})` })),
-      skills[0] ? String(skills[0].skillNum) : ""
     );
   }
 
@@ -618,6 +634,12 @@
         render: (wing) => renderIconCell(iconRecord("wing", wing.wingNum))
       },
       {
+        key: "rarityTier",
+        label: "Rarity/tier",
+        value: () => "Generated",
+        render: () => renderNameCell("Generated", "Owned WingInstance field, not template data")
+      },
+      {
         key: "sourcePathId",
         label: "Source",
         value: (wing) => Number(wing.sourcePathId || 0),
@@ -641,6 +663,12 @@
         label: "Icon",
         value: (mount) => iconName(iconRecord("mount", mount.mountNum)),
         render: (mount) => renderIconCell(iconRecord("mount", mount.mountNum))
+      },
+      {
+        key: "rarityTier",
+        label: "Rarity/tier",
+        value: () => "Generated",
+        render: () => renderNameCell("Generated", "Owned MountInstance field, not template data")
       },
       {
         key: "objectPathId",
@@ -923,10 +951,6 @@
     return rows;
   }
 
-  function rarityRows() {
-    return rarityUpgrades.levels || [];
-  }
-
   function renderStaticTable(metaEl, headEl, bodyEl, rows, columns, sortState, label, note) {
     if (!metaEl || !headEl || !bodyEl) return;
     const sorted = sortRows(rows, columns, sortState);
@@ -993,76 +1017,123 @@
     renderStaticTable(els.pvpTableMeta, els.pvpTableHead, els.pvpTableBody, pvpRows(), columns, state.pvpSort, "PvP reward rows", pvpRewards.note || "");
   }
 
-  function renderRarityTable() {
-    const columns = [
-      { key: "level", label: "Level", value: (row) => Number(row.level || 0), render: (row) => String(row.level || ""), className: "num" },
-      {
-        key: "requirement",
-        label: "Requirement",
-        value: (row) => Number(row.requirement || 0),
-        render: (row) => formatNumber(Number(row.requirement || 0)),
-        className: "num"
-      },
-      { key: "minutes", label: "Minutes", value: (row) => Number(row.minutes || 0), render: (row) => formatNumber(Number(row.minutes || 0)), className: "num" },
-      { key: "coinPrice", label: "Coin price", value: (row) => Number(row.coinPrice || 0), render: (row) => formatNumber(Number(row.coinPrice || 0)), className: "num" },
-      {
-        key: "crystalSkipPrice",
-        label: "Crystal skip",
-        value: (row) => Number(row.crystalSkipPrice || 0),
-        render: (row) => formatNumber(Number(row.crystalSkipPrice || 0)),
-        className: "num"
-      }
-    ];
-    renderStaticTable(
-      els.rarityTableMeta,
-      els.rarityTableHead,
-      els.rarityTableBody,
-      rarityRows(),
-      columns,
-      state.raritySort,
-      "rarity upgrade levels",
-      rarityUpgrades.note || ""
-    );
+  function initializeSkillBuild() {
+    skills.forEach((skill) => state.skillBuildLevels.set(skill.skillNum, defaultLevel));
+    skills
+      .slice()
+      .sort((a, b) => skillDps(b, defaultLevel) - skillDps(a, defaultLevel))
+      .slice(0, 5)
+      .forEach((skill) => state.selectedSkills.add(skill.skillNum));
   }
 
-  function renderSkillCalculator() {
-    const skill = skills.find((item) => String(item.skillNum) === String(els.skillCalcSelect.value)) || skills[0];
-    const level = clamp(els.skillCalcLevel.value, 0, Number(skill ? skill.maxLevel || 100 : 100));
-    els.skillCalcLevel.value = String(level);
-    els.skillCalcLevelNumber.value = String(level);
-    els.skillCalcLevelOut.value = String(level);
-    if (!skill) {
-      els.skillCalcMetrics.innerHTML = "";
-      return;
-    }
+  function aggregateSkillStats() {
+    let baseAttack = 0;
+    let bonusDamage = 0;
+    let attack = 0;
+    let chain = 0;
+    let dps = 0;
+    let cooldown = 0;
+    let cooldownCount = 0;
+    let totalExp = 0;
+    skills.forEach((skill) => {
+      if (!state.selectedSkills.has(skill.skillNum)) return;
+      const level = state.skillBuildLevels.get(skill.skillNum) || 0;
+      baseAttack += Number(skill.baseAttack || 0);
+      bonusDamage += skillBonusDamage(skill, level);
+      attack += knownSkillAttack(skill, level);
+      chain += simpleSkillChain(skill, level);
+      dps += skillDps(skill, level);
+      totalExp += totalExpToLevel(level, skillRequiredExp);
+      if (Number(skill.startedCooldown || 0) > 0) {
+        cooldown += Number(skill.startedCooldown || 0);
+        cooldownCount += 1;
+      }
+    });
+    return {
+      baseAttack,
+      bonusDamage,
+      attack,
+      chain,
+      dps,
+      totalExp,
+      averageCooldown: cooldownCount ? cooldown / cooldownCount : 0
+    };
+  }
 
-    const bonus = skillBonusDamage(skill, level);
-    const attack = knownSkillAttack(skill, level);
-    const chain = simpleSkillChain(skill, level);
-    const dps = skillDps(skill, level);
-    const target = targetInfo(skill.targetNedir);
-    const totalExp = totalExpToLevel(level, skillRequiredExp);
-    els.skillCalcMetrics.innerHTML = [
-      renderMetric("Skill", skillName(skill), rarityLabel(skill.rarity)),
-      renderMetric("Base attack", formatNumber(Number(skill.baseAttack || 0)), `SkillNum ${skill.skillNum}`),
-      renderMetric("Bonus damage", formatNumber(bonus), `${rarityLabel(skill.rarity)} x ${rarityMultiplier[skill.rarity] || 0}`),
-      renderMetric("Base + bonus", formatNumber(attack), "Recovered scalar only"),
-      renderMetric("Simple chain", formatNumber(chain), "Base + bonus x multi x bounce"),
-      renderMetric("DPS", formatNumber(dps), "Simple chain / cooldown"),
-      renderMetric("Cooldown", `${formatNumber(Number(skill.startedCooldown || 0))}s`, `${target.label} (${skill.targetNedir})`),
-      renderMetric("Target", target.label, target.detail),
-      renderMetric("Multiple count", formatNumber(Number(skill.baseMultipleCount || 0)), "Extracted field"),
-      renderMetric("Bounce count", formatNumber(Number(skill.baseBounceCount || 0)), "Extracted field"),
-      renderMetric("Next EXP", nextExpLabel(skill, level, skillRequiredExp), level >= Number(skill.maxLevel || 100) ? "Max level" : `For level ${level}`),
-      renderMetric("Total EXP", formatNumber(totalExp), `Level 0 to ${level}`)
+  function renderSkillBuildTotals() {
+    const aggregate = aggregateSkillStats();
+    const selectedCount = state.selectedSkills.size;
+    els.skillBuildMeta.textContent = `${selectedCount} selected`;
+    els.skillBuildTotals.innerHTML = [
+      `<div class="stat-total"><div class="label">Base attack</div><div class="value">${formatNumber(
+        aggregate.baseAttack
+      )}</div><div class="sub">${selectedCount ? "Selected skills" : "No skills selected"}</div></div>`,
+      `<div class="stat-total"><div class="label">Bonus damage</div><div class="value">${formatNumber(
+        aggregate.bonusDamage
+      )}</div><div class="sub">${selectedCount ? "Selected skills" : "No skills selected"}</div></div>`,
+      `<div class="stat-total"><div class="label">Base + bonus</div><div class="value">${formatNumber(
+        aggregate.attack
+      )}</div><div class="sub">${selectedCount ? "Selected skills" : "No skills selected"}</div></div>`,
+      `<div class="stat-total"><div class="label">Simple chain</div><div class="value">${formatNumber(
+        aggregate.chain
+      )}</div><div class="sub">Base + bonus x multi x bounce</div></div>`,
+      `<div class="stat-total"><div class="label">Total DPS</div><div class="value">${formatNumber(
+        aggregate.dps
+      )}</div><div class="sub">Sum of selected skill DPS</div></div>`,
+      `<div class="stat-total"><div class="label">Avg cooldown</div><div class="value">${formatNumber(
+        aggregate.averageCooldown
+      )}s</div><div class="sub">${selectedCount ? "Selected skills" : "No skills selected"}</div></div>`,
+      `<div class="stat-total"><div class="label">Total EXP</div><div class="value">${formatNumber(
+        aggregate.totalExp
+      )}</div><div class="sub">Level 0 to selected levels</div></div>`
     ].join("");
   }
 
+  function renderSkillBuildTable() {
+    els.skillBuildBody.innerHTML = skills
+      .map((skill) => {
+        const checked = state.selectedSkills.has(skill.skillNum) ? " checked" : "";
+        const level = state.skillBuildLevels.get(skill.skillNum) ?? 0;
+        return `<tr>
+          <td class="check-cell"><input type="checkbox" data-skill-check="${skill.skillNum}"${checked}></td>
+          <td>${renderIconCell(iconRecord("skill", skill.skillNum))}</td>
+          <td>${renderNameCell(skillName(skill), skill.gameObjectName || "")}</td>
+          <td>${rarityBadge(skill.rarity)}</td>
+          <td>
+            <label class="pet-level-control">
+              <input type="range" min="0" max="${Number(skill.maxLevel || 100)}" value="${level}" data-skill-level="${skill.skillNum}">
+              <output>${level}</output>
+            </label>
+          </td>
+          <td data-skill-stats-cell="${skill.skillNum}"><div class="chip-row">${statChipsForSkill(skill, level)}</div></td>
+        </tr>`;
+      })
+      .join("");
+    renderSkillBuildTotals();
+  }
+
+  function setSelectedSkills(skillNums) {
+    state.selectedSkills = new Set(skillNums);
+    renderSkillBuildTable();
+  }
+
+  function selectTopSkillsByMetric(metric, count) {
+    const level = clamp(els.skillBuildLevel.value, 0, 100);
+    const valueAtLevel = (skill) => (metric === "attack" ? knownSkillAttack(skill, level) : skillDps(skill, level));
+    const selected = skills
+      .slice()
+      .sort((a, b) => valueAtLevel(b) - valueAtLevel(a))
+      .filter((skill) => valueAtLevel(skill) > 0)
+      .slice(0, count)
+      .map((skill) => skill.skillNum);
+    setSelectedSkills(selected);
+  }
+
   function initializePetBuild() {
-    pets.forEach((pet) => state.petBuildLevels.set(pet.petNum, 10));
+    pets.forEach((pet) => state.petBuildLevels.set(pet.petNum, defaultLevel));
     pets
       .slice()
-      .sort((a, b) => petAttackPlusBonus(b, 0) - petAttackPlusBonus(a, 0))
+      .sort((a, b) => petAttackPlusBonus(b, defaultLevel) - petAttackPlusBonus(a, defaultLevel))
       .slice(0, 3)
       .forEach((pet) => state.selectedPets.add(pet.petNum));
   }
@@ -1111,9 +1182,10 @@
     els.petBuildBody.innerHTML = pets
       .map((pet) => {
         const checked = state.selectedPets.has(pet.petNum) ? " checked" : "";
-        const level = state.petBuildLevels.get(pet.petNum) ?? 10;
+        const level = state.petBuildLevels.get(pet.petNum) ?? 0;
         return `<tr>
           <td class="check-cell"><input type="checkbox" data-pet-check="${pet.petNum}"${checked}></td>
+          <td>${renderIconCell(iconRecord("pet", pet.petNum))}</td>
           <td>${renderNameCell(petName(pet), pet.gameObjectName || "")}</td>
           <td>${rarityBadge(pet.rarity)}</td>
           <td>
@@ -1221,8 +1293,7 @@
     [
       { head: els.eventTableHead, sortKey: "eventSort", render: renderEventTable },
       { head: els.baseTableHead, sortKey: "baseSort", render: renderBaseTable },
-      { head: els.pvpTableHead, sortKey: "pvpSort", render: renderPvpTable },
-      { head: els.rarityTableHead, sortKey: "raritySort", render: renderRarityTable }
+      { head: els.pvpTableHead, sortKey: "pvpSort", render: renderPvpTable }
     ].forEach((table) => {
       if (!table.head) return;
       table.head.addEventListener("click", (event) => {
@@ -1237,11 +1308,42 @@
       });
     });
 
-    els.skillCalcSelect.addEventListener("change", renderSkillCalculator);
-    els.skillCalcLevel.addEventListener("input", renderSkillCalculator);
-    els.skillCalcLevelNumber.addEventListener("input", () => {
-      els.skillCalcLevel.value = String(clamp(els.skillCalcLevelNumber.value, 0, 100));
-      renderSkillCalculator();
+    els.skillBuildLevel.addEventListener("input", () => {
+      const level = clamp(els.skillBuildLevel.value, 0, 100);
+      els.skillBuildLevelOut.value = String(level);
+      state.selectedSkills.forEach((skillNum) => state.skillBuildLevels.set(skillNum, level));
+      renderSkillBuildTable();
+    });
+
+    els.selectAllSkills.addEventListener("click", () => setSelectedSkills(skills.map((skill) => skill.skillNum)));
+    els.clearSkills.addEventListener("click", () => setSelectedSkills([]));
+    els.topDpsSkills.addEventListener("click", () => selectTopSkillsByMetric("dps", 5));
+    els.topAttackSkills.addEventListener("click", () => selectTopSkillsByMetric("attack", 5));
+
+    els.skillBuildBody.addEventListener("input", (event) => {
+      const levelInput = event.target.closest("[data-skill-level]");
+      if (!levelInput) return;
+      const skillNum = Number(levelInput.dataset.skillLevel);
+      const level = clamp(levelInput.value, 0, 100);
+      state.skillBuildLevels.set(skillNum, level);
+      const output = levelInput.parentElement.querySelector("output");
+      const skill = skills.find((item) => Number(item.skillNum) === skillNum);
+      const statCell = els.skillBuildBody.querySelector(`[data-skill-stats-cell="${skillNum}"]`);
+      if (output) {
+        output.value = String(level);
+        output.textContent = String(level);
+      }
+      if (statCell && skill) statCell.innerHTML = `<div class="chip-row">${statChipsForSkill(skill, level)}</div>`;
+      renderSkillBuildTotals();
+    });
+
+    els.skillBuildBody.addEventListener("change", (event) => {
+      const checkbox = event.target.closest("[data-skill-check]");
+      if (!checkbox) return;
+      const skillNum = Number(checkbox.dataset.skillCheck);
+      if (checkbox.checked) state.selectedSkills.add(skillNum);
+      else state.selectedSkills.delete(skillNum);
+      renderSkillBuildTotals();
     });
 
     els.petBuildLevel.addEventListener("input", () => {
@@ -1286,6 +1388,7 @@
   function init() {
     els.datasetStats.textContent = `${pets.length} pets, ${skills.length} skills, ${wings.length} wings, ${mounts.length} mounts, recovered level scaling`;
     setupFilters();
+    initializeSkillBuild();
     initializePetBuild();
     bindEvents();
     renderOverview();
@@ -1296,8 +1399,7 @@
     renderEventTable();
     renderBaseTable();
     renderPvpTable();
-    renderRarityTable();
-    renderSkillCalculator();
+    renderSkillBuildTable();
     renderPetBuildTable();
   }
 

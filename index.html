@@ -25,7 +25,6 @@
           <button class="tab" type="button" data-view="events">Events</button>
           <button class="tab" type="button" data-view="base">Base</button>
           <button class="tab" type="button" data-view="pvp">PvP</button>
-          <button class="tab" type="button" data-view="rarity">Rarity</button>
           <button class="tab" type="button" data-view="formulas">Formulas</button>
         </nav>
       </header>
@@ -151,23 +150,21 @@
           <div class="two-col calculator-grid">
             <section class="data-panel">
               <div class="panel-head">
-                <h2>Skill Calculator</h2>
+                <h2>Skill Build Calculator</h2>
               </div>
               <div class="calc-controls">
-                <label class="control">
-                  <span>Skill</span>
-                  <select id="skillCalcSelect"></select>
-                </label>
                 <label class="control control-range">
-                  <span>Level <output id="skillCalcLevelOut">10</output></span>
-                  <input id="skillCalcLevel" type="range" min="0" max="100" value="10">
+                  <span>Set selected level <output id="skillBuildLevelOut">10</output></span>
+                  <input id="skillBuildLevel" type="range" min="0" max="100" value="10">
                 </label>
-                <label class="control number-control">
-                  <span>Exact level</span>
-                  <input id="skillCalcLevelNumber" type="number" min="0" max="100" value="0">
-                </label>
+                <div class="button-row">
+                  <button id="selectAllSkills" type="button">All</button>
+                  <button id="clearSkills" type="button">Clear</button>
+                  <button id="topDpsSkills" type="button">Top DPS</button>
+                  <button id="topAttackSkills" type="button">Top attack</button>
+                </div>
               </div>
-              <div id="skillCalcMetrics" class="metric-grid"></div>
+              <div id="skillBuildTotals" class="stat-total-grid"></div>
             </section>
 
             <section class="data-panel">
@@ -190,16 +187,39 @@
             </section>
           </div>
 
-          <section class="data-panel pet-build-panel">
+          <section class="data-panel build-panel">
+            <div class="panel-head">
+              <h2>Skill Selection</h2>
+              <span id="skillBuildMeta" class="panel-note"></span>
+            </div>
+            <div class="table-wrap compact">
+              <table class="data-table build-table" id="skillBuildTable">
+                <thead>
+                  <tr>
+                    <th class="narrow">Use</th>
+                    <th class="icon-col">Icon</th>
+                    <th>Skill</th>
+                    <th>Rarity</th>
+                    <th class="level-col">Level</th>
+                    <th>Calculated stats</th>
+                  </tr>
+                </thead>
+                <tbody id="skillBuildBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="data-panel build-panel">
             <div class="panel-head">
               <h2>Pet Selection</h2>
               <span id="petBuildMeta" class="panel-note"></span>
             </div>
             <div class="table-wrap compact">
-              <table class="data-table" id="petBuildTable">
+              <table class="data-table build-table" id="petBuildTable">
                 <thead>
                   <tr>
                     <th class="narrow">Use</th>
+                    <th class="icon-col">Icon</th>
                     <th>Pet</th>
                     <th>Rarity</th>
                     <th class="level-col">Level</th>
@@ -238,16 +258,6 @@
             <table class="data-table" id="pvpTable">
               <thead id="pvpTableHead"></thead>
               <tbody id="pvpTableBody"></tbody>
-            </table>
-          </div>
-        </section>
-
-        <section id="rarityView" class="view" data-view-panel="rarity">
-          <div class="table-meta" id="rarityTableMeta"></div>
-          <div class="table-wrap">
-            <table class="data-table" id="rarityTable">
-              <thead id="rarityTableHead"></thead>
-              <tbody id="rarityTableBody"></tbody>
             </table>
           </div>
         </section>
@@ -333,6 +343,9 @@ Target X:
 Runtime instance fields:
   id, wingNum, rarity, level, currentExp, stats
 
+Rarity/tier:
+  per owned/generated WingInstance, not fixed template data
+
 Known native formulas:
   RarityGrowth = [30, 60, 90, 130, 200]
   RarityMaxExps = [40, 60, 80, 100, 120]
@@ -358,6 +371,9 @@ wings service response, so actual wing stat rolls appear server/generated.</pre>
 
 Runtime instance fields:
   id, mountNum, rarity, level, currentExp, stats
+
+Rarity/tier:
+  per owned/generated MountInstance, not fixed template data
 
 Known native formulas:
   RarityGrowth = [2, 4, 6, 8, 10]

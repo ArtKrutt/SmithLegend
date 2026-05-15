@@ -8,7 +8,6 @@ window.SMITH_LEGEND_DATA = {
     "extracted_data/events.json",
     "extracted_data/base.json",
     "extracted_data/pvp_rewards.json",
-    "extracted_data/rarity_upgrades.json",
     "extracted_data/localization_en.json",
     "extracted_data/scaling_formulas.md"
   ],
@@ -7736,7 +7735,7 @@ window.SMITH_LEGEND_DATA = {
     ]
   },
   "base": {
-    "note": "GuildBaseData.Configs is client-side static data. Bonus-per-level values were recovered directly. Some labels are fallback English strings because these IL2CPP string slots are runtime-initialized. Cost/time arrays are embedded via RuntimeHelpers.InitializeArray field blobs and are marked present but not decoded.",
+    "note": "GuildBaseData.Configs is client-side static data. Bonus-per-level values were recovered directly. Some labels are fallback English strings because these IL2CPP string slots are runtime-initialized in this APK. Cost/time arrays are compiled into RuntimeHelpers.InitializeArray field blobs; this extractor records their presence/slots, but does not yet map each field handle back to its decoded _PrivateImplementationDetails blob.",
     "source": "cpp2il_out_isil_1.0.41/IsilDump/Assembly-CSharp/GuildBaseData.txt",
     "buildings": [
       {
@@ -7861,16 +7860,799 @@ window.SMITH_LEGEND_DATA = {
     ]
   },
   "pvpRewards": {
-    "note": "LeagueRewardConfig.GetRewardsForTier is client-side static data. Entries are grouped by rank threshold, with one row per league tier. Reward resource names are runtime-initialized IL2CPP strings, so unresolved keys are named reward_1, reward_2, etc. in native Add-call order.",
+    "note": "LeagueRewardConfig.GetRewardsForTier is client-side static data. Amounts are decoded from the value passed into each Dictionary.Add call, including MOVK/Add-built constants. Tier grouping is reconstructed from the branch layout; Gold matches the in-game Gold League screenshot rows for rank 1/2/3/10/20.",
     "source": "cpp2il_out_isil_1.0.41/IsilDump/Assembly-CSharp/LeagueRewardConfig.txt",
     "decodedAddCount": 240,
+    "rawEntryCount": 42,
     "resourceKeys": [
-      "reward_1",
-      "reward_2",
+      "blueGem",
+      "coin",
+      "egg",
+      "eggAlt",
+      "feather",
+      "greenGem",
+      "greenKey",
+      "redKey",
       "reward_3",
       "reward_4",
       "reward_5",
-      "reward_6"
+      "ticket"
+    ],
+    "rawEntries": [
+      {
+        "rankThreshold": 1,
+        "rewards": {
+          "coin": 70200,
+          "blueGem": 1424,
+          "greenKey": 4,
+          "greenGem": 4404,
+          "redKey": 4,
+          "feather": 500
+        },
+        "rewardSlots": {
+          "coin": "0x220C1E0",
+          "blueGem": "0x220C1E8",
+          "greenKey": "0x220C210",
+          "greenGem": "0x220C1A0",
+          "redKey": "0x220C208",
+          "feather": "0x220BDC8"
+        }
+      },
+      {
+        "rankThreshold": 1,
+        "rewards": {
+          "coin": 38000,
+          "blueGem": 800,
+          "greenKey": 2,
+          "greenGem": 2300,
+          "redKey": 2,
+          "feather": 200
+        },
+        "rewardSlots": {
+          "coin": "0x220C1E0",
+          "blueGem": "0x220C1E8",
+          "greenKey": "0x220C210",
+          "greenGem": "0x220C1A0",
+          "redKey": "0x220C208",
+          "feather": "0x220BDC8"
+        }
+      },
+      {
+        "rankThreshold": 1,
+        "rewards": {
+          "coin": 190400,
+          "blueGem": 2848,
+          "greenKey": 10,
+          "greenGem": 12800,
+          "redKey": 10,
+          "feather": 900
+        },
+        "rewardSlots": {
+          "coin": "0x220C1E0",
+          "blueGem": "0x220C1E8",
+          "greenKey": "0x220C210",
+          "greenGem": "0x220C1A0",
+          "redKey": "0x220C208",
+          "feather": "0x220BDC8"
+        }
+      },
+      {
+        "rankThreshold": 1,
+        "rewards": {
+          "coin": 20000,
+          "blueGem": 400,
+          "reward_3": 200,
+          "greenGem": 800,
+          "reward_5": 170,
+          "feather": 120
+        },
+        "rewardSlots": {
+          "coin": "0x220C1E0",
+          "blueGem": "0x220C1E8",
+          "reward_3": "0x220C1F0",
+          "greenGem": "0x220C1A0",
+          "reward_5": "0x220C1B0",
+          "feather": "0x220BDC8"
+        }
+      },
+      {
+        "rankThreshold": 1,
+        "rewards": {
+          "coin": 51300,
+          "blueGem": 975,
+          "greenKey": 3,
+          "greenGem": 3755,
+          "redKey": 3,
+          "feather": 350
+        },
+        "rewardSlots": {
+          "coin": "0x220C1E0",
+          "blueGem": "0x220C1E8",
+          "greenKey": "0x220C210",
+          "greenGem": "0x220C1A0",
+          "redKey": "0x220C208",
+          "feather": "0x220BDC8"
+        }
+      },
+      {
+        "rankThreshold": 1,
+        "rewards": {
+          "coin": 98200,
+          "blueGem": 1893,
+          "greenKey": 7,
+          "greenGem": 6000,
+          "redKey": 7,
+          "feather": 600
+        },
+        "rewardSlots": {
+          "coin": "0x220C1E0",
+          "blueGem": "0x220C1E8",
+          "greenKey": "0x220B210",
+          "greenGem": "0x220B1A0",
+          "redKey": "0x220B208",
+          "feather": "0x220ADC8"
+        }
+      },
+      {
+        "rankThreshold": 1,
+        "rewards": {
+          "coin": 29000,
+          "blueGem": 400,
+          "greenKey": 2,
+          "greenGem": 1000,
+          "redKey": 1,
+          "feather": 150
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenKey": "0x220B210",
+          "greenGem": "0x220B1A0",
+          "redKey": "0x220B208",
+          "feather": "0x220ADC8"
+        }
+      },
+      {
+        "rankThreshold": 2,
+        "rewards": {
+          "coin": 15000,
+          "blueGem": 250,
+          "greenGem": 120,
+          "reward_4": 600,
+          "greenKey": 120,
+          "redKey": 80
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "greenKey": "0x220B210",
+          "redKey": "0x220B208"
+        }
+      },
+      {
+        "rankThreshold": 2,
+        "rewards": {
+          "coin": 37800,
+          "blueGem": 713,
+          "greenGem": 3,
+          "reward_4": 2350,
+          "feather": 3,
+          "redKey": 200
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8",
+          "redKey": "0x220B208"
+        }
+      },
+      {
+        "rankThreshold": 2,
+        "rewards": {
+          "coin": 72300,
+          "blueGem": 1282,
+          "greenGem": 5,
+          "reward_4": 3500,
+          "feather": 5,
+          "redKey": 300
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8",
+          "redKey": "0x220B208"
+        }
+      },
+      {
+        "rankThreshold": 2,
+        "rewards": {
+          "coin": 51700,
+          "blueGem": 1000,
+          "greenGem": 4,
+          "reward_4": 2849,
+          "feather": 4,
+          "redKey": 250
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8",
+          "redKey": "0x220B208"
+        }
+      },
+      {
+        "rankThreshold": 2,
+        "rewards": {
+          "coin": 153300,
+          "blueGem": 1804,
+          "greenGem": 8,
+          "reward_4": 9000,
+          "feather": 8,
+          "redKey": 700
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8",
+          "redKey": "0x220B208"
+        }
+      },
+      {
+        "rankThreshold": 2,
+        "rewards": {
+          "coin": 28000,
+          "blueGem": 580,
+          "greenKey": 2,
+          "greenGem": 1200,
+          "redKey": 2,
+          "feather": 140
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenKey": "0x220B210",
+          "greenGem": "0x220B1A0",
+          "redKey": "0x220B208",
+          "feather": "0x220ADC8"
+        }
+      },
+      {
+        "rankThreshold": 2,
+        "rewards": {
+          "coin": 24000,
+          "blueGem": 300,
+          "greenKey": 1,
+          "greenGem": 750,
+          "redKey": 1,
+          "feather": 100
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenKey": "0x220B210",
+          "greenGem": "0x220B1A0",
+          "redKey": "0x220B208",
+          "feather": "0x220ADC8"
+        }
+      },
+      {
+        "rankThreshold": 3,
+        "rewards": {
+          "coin": 13000,
+          "blueGem": 200,
+          "greenGem": 100,
+          "reward_4": 450,
+          "greenKey": 100,
+          "redKey": 50
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "greenKey": "0x220B210",
+          "redKey": "0x220B208"
+        }
+      },
+      {
+        "rankThreshold": 3,
+        "rewards": {
+          "coin": 31050,
+          "blueGem": 505,
+          "greenGem": 2,
+          "reward_4": 1012,
+          "feather": 2,
+          "redKey": 128
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8",
+          "redKey": "0x220B208"
+        }
+      },
+      {
+        "rankThreshold": 3,
+        "rewards": {
+          "coin": 59500,
+          "blueGem": 975,
+          "greenGem": 4,
+          "reward_4": 2500,
+          "feather": 3,
+          "redKey": 250
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8",
+          "redKey": "0x220B208"
+        }
+      },
+      {
+        "rankThreshold": 3,
+        "rewards": {
+          "coin": 42500,
+          "blueGem": 754,
+          "greenGem": 3,
+          "reward_4": 1386,
+          "feather": 3,
+          "redKey": 200
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8",
+          "redKey": "0x220B208"
+        }
+      },
+      {
+        "rankThreshold": 3,
+        "rewards": {
+          "coin": 120000,
+          "blueGem": 1407,
+          "greenGem": 7,
+          "reward_4": 7000,
+          "feather": 7,
+          "redKey": 550
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8",
+          "redKey": "0x220B208"
+        }
+      },
+      {
+        "rankThreshold": 3,
+        "rewards": {
+          "coin": 23000,
+          "blueGem": 300,
+          "greenKey": 1,
+          "greenGem": 750,
+          "redKey": 1,
+          "feather": 80
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenKey": "0x220B210",
+          "greenGem": "0x220B1A0",
+          "redKey": "0x220B208",
+          "feather": "0x220ADC8"
+        }
+      },
+      {
+        "rankThreshold": 3,
+        "rewards": {
+          "coin": 19000,
+          "blueGem": 230,
+          "greenKey": 1,
+          "greenGem": 600,
+          "redKey": 1,
+          "feather": 60
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenKey": "0x220B210",
+          "greenGem": "0x220B1A0",
+          "redKey": "0x220B208",
+          "feather": "0x220ADC8"
+        }
+      },
+      {
+        "rankThreshold": 10,
+        "rewards": {
+          "coin": 9000,
+          "blueGem": 150,
+          "greenGem": 70,
+          "reward_4": 350,
+          "greenKey": 50
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "greenKey": "0x220B210"
+        }
+      },
+      {
+        "rankThreshold": 10,
+        "rewards": {
+          "coin": 25650,
+          "blueGem": 337,
+          "greenGem": 2,
+          "reward_4": 607,
+          "feather": 1,
+          "redKey": 80
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8",
+          "redKey": "0x220B208"
+        }
+      },
+      {
+        "rankThreshold": 10,
+        "rewards": {
+          "coin": 49100,
+          "blueGem": 745,
+          "greenGem": 4,
+          "reward_4": 2000,
+          "feather": 2,
+          "redKey": 200
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8",
+          "redKey": "0x220B208"
+        }
+      },
+      {
+        "rankThreshold": 10,
+        "rewards": {
+          "coin": 35100,
+          "blueGem": 561,
+          "greenGem": 2,
+          "reward_4": 831,
+          "feather": 2,
+          "redKey": 150
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8",
+          "redKey": "0x220B208"
+        }
+      },
+      {
+        "rankThreshold": 10,
+        "rewards": {
+          "coin": 90200,
+          "blueGem": 1250,
+          "greenGem": 6,
+          "reward_4": 6000,
+          "feather": 6,
+          "redKey": 300
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8",
+          "redKey": "0x220B208"
+        }
+      },
+      {
+        "rankThreshold": 10,
+        "rewards": {
+          "coin": 19000,
+          "blueGem": 250,
+          "greenKey": 1,
+          "greenGem": 450,
+          "eggAlt": 200,
+          "feather": 50
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenKey": "0x220B210",
+          "greenGem": "0x220B1A0",
+          "eggAlt": "0x220A1B0",
+          "feather": "0x220ADC8"
+        }
+      },
+      {
+        "rankThreshold": 10,
+        "rewards": {
+          "coin": 15000,
+          "blueGem": 180,
+          "egg": 110,
+          "greenGem": 400,
+          "eggAlt": 120,
+          "feather": 20
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "egg": "0x220A1F0",
+          "greenGem": "0x220B1A0",
+          "eggAlt": "0x220A1B0",
+          "feather": "0x220ADC8"
+        }
+      },
+      {
+        "rankThreshold": 20,
+        "rewards": {
+          "coin": 7000,
+          "blueGem": 100,
+          "greenGem": 50,
+          "reward_4": 200
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8"
+        }
+      },
+      {
+        "rankThreshold": 20,
+        "rewards": {
+          "coin": 18900,
+          "blueGem": 202,
+          "greenGem": 1,
+          "reward_4": 472,
+          "feather": 1,
+          "eggAlt": 27
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8",
+          "eggAlt": "0x220A1B0"
+        }
+      },
+      {
+        "rankThreshold": 20,
+        "rewards": {
+          "coin": 36100,
+          "blueGem": 386,
+          "greenGem": 3,
+          "reward_4": 1500,
+          "feather": 2,
+          "eggAlt": 150
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8",
+          "eggAlt": "0x220A1B0"
+        }
+      },
+      {
+        "rankThreshold": 20,
+        "rewards": {
+          "coin": 25800,
+          "blueGem": 276,
+          "greenGem": 1,
+          "reward_4": 646,
+          "feather": 1,
+          "eggAlt": 100
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8",
+          "eggAlt": "0x220A1B0"
+        }
+      },
+      {
+        "rankThreshold": 20,
+        "rewards": {
+          "coin": 71600,
+          "blueGem": 1151,
+          "greenGem": 5,
+          "reward_4": 5000,
+          "feather": 5,
+          "eggAlt": 250
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8",
+          "eggAlt": "0x220A1B0"
+        }
+      },
+      {
+        "rankThreshold": 20,
+        "rewards": {
+          "coin": 14000,
+          "blueGem": 150,
+          "ticket": 140,
+          "greenGem": 350,
+          "egg": 100,
+          "feather": 20
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "ticket": "0x22091F0",
+          "greenGem": "0x220B1A0",
+          "egg": "0x220A1F0",
+          "feather": "0x220ADC8"
+        }
+      },
+      {
+        "rankThreshold": 20,
+        "rewards": {
+          "coin": 11000,
+          "blueGem": 120,
+          "egg": 90,
+          "greenGem": 300,
+          "ticket": 50
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "egg": "0x220A1F0",
+          "greenGem": "0x220B1A0",
+          "ticket": "0x22091F0"
+        }
+      },
+      {
+        "rankThreshold": 50,
+        "rewards": {
+          "coin": 5000,
+          "blueGem": 50,
+          "greenGem": 50,
+          "reward_4": 100
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8"
+        }
+      },
+      {
+        "rankThreshold": 50,
+        "rewards": {
+          "coin": 14850,
+          "blueGem": 135,
+          "greenGem": 1,
+          "reward_4": 270,
+          "feather": 1
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8"
+        }
+      },
+      {
+        "rankThreshold": 50,
+        "rewards": {
+          "coin": 28400,
+          "blueGem": 257,
+          "greenGem": 2,
+          "reward_4": 1000,
+          "feather": 1
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8"
+        }
+      },
+      {
+        "rankThreshold": 50,
+        "rewards": {
+          "coin": 20300,
+          "blueGem": 184,
+          "greenGem": 1,
+          "reward_4": 369,
+          "feather": 1
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8"
+        }
+      },
+      {
+        "rankThreshold": 50,
+        "rewards": {
+          "coin": 60600,
+          "blueGem": 967,
+          "greenGem": 4,
+          "reward_4": 4000,
+          "feather": 4,
+          "ticket": 200
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "greenGem": "0x220B1A0",
+          "reward_4": "0x220C2B8",
+          "feather": "0x220ADC8",
+          "ticket": "0x22091F0"
+        }
+      },
+      {
+        "rankThreshold": 50,
+        "rewards": {
+          "coin": 11000,
+          "blueGem": 100,
+          "ticket": 100,
+          "greenGem": 200,
+          "egg": 50
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "ticket": "0x22091F0",
+          "greenGem": "0x220B1A0",
+          "egg": "0x220A1F0"
+        }
+      },
+      {
+        "rankThreshold": 50,
+        "rewards": {
+          "coin": 8000,
+          "blueGem": 70,
+          "egg": 80,
+          "greenGem": 150
+        },
+        "rewardSlots": {
+          "coin": "0x220B1E0",
+          "blueGem": "0x220B1E8",
+          "egg": "0x220A1F0",
+          "greenGem": "0x220B1A0"
+        }
+      }
     ],
     "tiers": [
       {
@@ -7880,107 +8662,115 @@ window.SMITH_LEGEND_DATA = {
           {
             "rankThreshold": 1,
             "rewards": {
-              "reward_1": 70200,
-              "reward_2": 1424,
-              "reward_3": 4,
-              "reward_4": 4404,
-              "reward_5": 4,
-              "reward_6": 500
+              "coin": 20000,
+              "blueGem": 400,
+              "reward_3": 200,
+              "greenGem": 800,
+              "reward_5": 170,
+              "feather": 120
             },
             "rewardSlots": {
-              "reward_1": "0x220C1E0",
-              "reward_2": "0x220C1E8",
-              "reward_3": "0x220C210",
-              "reward_4": "0x220C1A0",
-              "reward_5": "0x220C208",
-              "reward_6": "0x220BDC8"
+              "coin": "0x220C1E0",
+              "blueGem": "0x220C1E8",
+              "reward_3": "0x220C1F0",
+              "greenGem": "0x220C1A0",
+              "reward_5": "0x220C1B0",
+              "feather": "0x220BDC8"
             }
           },
           {
             "rankThreshold": 2,
             "rewards": {
-              "reward_1": 15000,
-              "reward_2": 250,
-              "reward_3": 120,
+              "coin": 15000,
+              "blueGem": 250,
+              "greenGem": 120,
               "reward_4": 600,
-              "reward_5": 120,
-              "reward_6": 80
+              "greenKey": 120,
+              "redKey": 80
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
               "reward_4": "0x220C2B8",
-              "reward_5": "0x220B210",
-              "reward_6": "0x220B208"
+              "greenKey": "0x220B210",
+              "redKey": "0x220B208"
             }
           },
           {
             "rankThreshold": 3,
             "rewards": {
-              "reward_1": 200,
-              "reward_2": 100,
-              "reward_3": 450,
-              "reward_4": 100,
-              "reward_5": 50,
-              "reward_6": 31050
+              "coin": 13000,
+              "blueGem": 200,
+              "greenGem": 100,
+              "reward_4": 450,
+              "greenKey": 100,
+              "redKey": 50
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
               "reward_4": "0x220C2B8",
-              "reward_5": "0x220B210",
-              "reward_6": "0x220B208"
+              "greenKey": "0x220B210",
+              "redKey": "0x220B208"
             }
           },
           {
             "rankThreshold": 10,
             "rewards": {
-              "reward_1": 150,
-              "reward_2": 70,
-              "reward_3": 350,
-              "reward_4": 50,
-              "reward_5": 25650
+              "coin": 9000,
+              "blueGem": 150,
+              "greenGem": 70,
+              "reward_4": 350,
+              "greenKey": 50
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
               "reward_4": "0x220C2B8",
-              "reward_5": "0x220B210"
+              "greenKey": "0x220B210"
             }
           },
           {
             "rankThreshold": 20,
             "rewards": {
-              "reward_1": 100,
-              "reward_2": 50,
-              "reward_3": 200,
-              "reward_4": 18900
+              "coin": 7000,
+              "blueGem": 100,
+              "greenGem": 50,
+              "reward_4": 200
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
               "reward_4": "0x220C2B8"
             }
           },
           {
             "rankThreshold": 50,
             "rewards": {
-              "reward_1": 50,
-              "reward_2": 100,
-              "reward_3": 14850,
-              "reward_4": 135
+              "coin": 5000,
+              "blueGem": 50,
+              "greenGem": 50,
+              "reward_4": 100
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
               "reward_4": "0x220C2B8"
             }
           }
+        ],
+        "sourceEntryIndexes": [
+          3,
+          7,
+          14,
+          21,
+          28,
+          35
         ]
       },
       {
@@ -7990,115 +8780,119 @@ window.SMITH_LEGEND_DATA = {
           {
             "rankThreshold": 1,
             "rewards": {
-              "reward_1": 38000,
-              "reward_2": 800,
-              "reward_3": 2,
-              "reward_4": 2300,
-              "reward_5": 2,
-              "reward_6": 200
+              "coin": 29000,
+              "blueGem": 400,
+              "greenKey": 2,
+              "greenGem": 1000,
+              "redKey": 1,
+              "feather": 150
             },
             "rewardSlots": {
-              "reward_1": "0x220C1E0",
-              "reward_2": "0x220C1E8",
-              "reward_3": "0x220C210",
-              "reward_4": "0x220C1A0",
-              "reward_5": "0x220C208",
-              "reward_6": "0x220BDC8"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenKey": "0x220B210",
+              "greenGem": "0x220B1A0",
+              "redKey": "0x220B208",
+              "feather": "0x220ADC8"
             }
           },
           {
             "rankThreshold": 2,
             "rewards": {
-              "reward_1": 37800,
-              "reward_2": 713,
-              "reward_3": 3,
-              "reward_4": 2350,
-              "reward_5": 3,
-              "reward_6": 200
+              "coin": 24000,
+              "blueGem": 300,
+              "greenKey": 1,
+              "greenGem": 750,
+              "redKey": 1,
+              "feather": 100
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
-              "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8",
-              "reward_6": "0x220B208"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenKey": "0x220B210",
+              "greenGem": "0x220B1A0",
+              "redKey": "0x220B208",
+              "feather": "0x220ADC8"
             }
           },
           {
             "rankThreshold": 3,
             "rewards": {
-              "reward_1": 505,
-              "reward_2": 2,
-              "reward_3": 1012,
-              "reward_4": 2,
-              "reward_5": 128,
-              "reward_6": 59500
+              "coin": 19000,
+              "blueGem": 230,
+              "greenKey": 1,
+              "greenGem": 600,
+              "redKey": 1,
+              "feather": 60
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
-              "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8",
-              "reward_6": "0x220B208"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenKey": "0x220B210",
+              "greenGem": "0x220B1A0",
+              "redKey": "0x220B208",
+              "feather": "0x220ADC8"
             }
           },
           {
             "rankThreshold": 10,
             "rewards": {
-              "reward_1": 337,
-              "reward_2": 2,
-              "reward_3": 607,
-              "reward_4": 1,
-              "reward_5": 80,
-              "reward_6": 49100
+              "coin": 15000,
+              "blueGem": 180,
+              "egg": 110,
+              "greenGem": 400,
+              "eggAlt": 120,
+              "feather": 20
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
-              "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8",
-              "reward_6": "0x220B208"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "egg": "0x220A1F0",
+              "greenGem": "0x220B1A0",
+              "eggAlt": "0x220A1B0",
+              "feather": "0x220ADC8"
             }
           },
           {
             "rankThreshold": 20,
             "rewards": {
-              "reward_1": 202,
-              "reward_2": 1,
-              "reward_3": 472,
-              "reward_4": 1,
-              "reward_5": 27,
-              "reward_6": 36100
+              "coin": 11000,
+              "blueGem": 120,
+              "egg": 90,
+              "greenGem": 300,
+              "ticket": 50
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
-              "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8",
-              "reward_6": "0x220A1B0"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "egg": "0x220A1F0",
+              "greenGem": "0x220B1A0",
+              "ticket": "0x22091F0"
             }
           },
           {
             "rankThreshold": 50,
             "rewards": {
-              "reward_1": 1,
-              "reward_2": 270,
-              "reward_3": 1,
-              "reward_4": 20,
-              "reward_5": 28400
+              "coin": 8000,
+              "blueGem": 70,
+              "egg": 80,
+              "greenGem": 150
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
-              "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "egg": "0x220A1F0",
+              "greenGem": "0x220B1A0"
             }
           }
+        ],
+        "sourceEntryIndexes": [
+          6,
+          13,
+          20,
+          27,
+          34,
+          41
         ]
       },
       {
@@ -8108,115 +8902,123 @@ window.SMITH_LEGEND_DATA = {
           {
             "rankThreshold": 1,
             "rewards": {
-              "reward_1": 190400,
-              "reward_2": 2848,
-              "reward_3": 10,
-              "reward_4": 12800,
-              "reward_5": 10,
-              "reward_6": 900
+              "coin": 38000,
+              "blueGem": 800,
+              "greenKey": 2,
+              "greenGem": 2300,
+              "redKey": 2,
+              "feather": 200
             },
             "rewardSlots": {
-              "reward_1": "0x220C1E0",
-              "reward_2": "0x220C1E8",
-              "reward_3": "0x220C210",
-              "reward_4": "0x220C1A0",
-              "reward_5": "0x220C208",
-              "reward_6": "0x220BDC8"
+              "coin": "0x220C1E0",
+              "blueGem": "0x220C1E8",
+              "greenKey": "0x220C210",
+              "greenGem": "0x220C1A0",
+              "redKey": "0x220C208",
+              "feather": "0x220BDC8"
             }
           },
           {
             "rankThreshold": 2,
             "rewards": {
-              "reward_1": 1282,
-              "reward_2": 5,
-              "reward_3": 3500,
-              "reward_4": 5,
-              "reward_5": 300,
-              "reward_6": 51700
+              "coin": 28000,
+              "blueGem": 580,
+              "greenKey": 2,
+              "greenGem": 1200,
+              "redKey": 2,
+              "feather": 140
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
-              "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8",
-              "reward_6": "0x220B208"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenKey": "0x220B210",
+              "greenGem": "0x220B1A0",
+              "redKey": "0x220B208",
+              "feather": "0x220ADC8"
             }
           },
           {
             "rankThreshold": 3,
             "rewards": {
-              "reward_1": 975,
-              "reward_2": 4,
-              "reward_3": 2500,
-              "reward_4": 3,
-              "reward_5": 250,
-              "reward_6": 42500
+              "coin": 23000,
+              "blueGem": 300,
+              "greenKey": 1,
+              "greenGem": 750,
+              "redKey": 1,
+              "feather": 80
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
-              "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8",
-              "reward_6": "0x220B208"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenKey": "0x220B210",
+              "greenGem": "0x220B1A0",
+              "redKey": "0x220B208",
+              "feather": "0x220ADC8"
             }
           },
           {
             "rankThreshold": 10,
             "rewards": {
-              "reward_1": 745,
-              "reward_2": 4,
-              "reward_3": 2000,
-              "reward_4": 2,
-              "reward_5": 200,
-              "reward_6": 35100
+              "coin": 19000,
+              "blueGem": 250,
+              "greenKey": 1,
+              "greenGem": 450,
+              "eggAlt": 200,
+              "feather": 50
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
-              "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8",
-              "reward_6": "0x220B208"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenKey": "0x220B210",
+              "greenGem": "0x220B1A0",
+              "eggAlt": "0x220A1B0",
+              "feather": "0x220ADC8"
             }
           },
           {
             "rankThreshold": 20,
             "rewards": {
-              "reward_1": 386,
-              "reward_2": 3,
-              "reward_3": 1500,
-              "reward_4": 2,
-              "reward_5": 150,
-              "reward_6": 25800
+              "coin": 14000,
+              "blueGem": 150,
+              "ticket": 140,
+              "greenGem": 350,
+              "egg": 100,
+              "feather": 20
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
-              "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8",
-              "reward_6": "0x220A1B0"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "ticket": "0x22091F0",
+              "greenGem": "0x220B1A0",
+              "egg": "0x220A1F0",
+              "feather": "0x220ADC8"
             }
           },
           {
             "rankThreshold": 50,
             "rewards": {
-              "reward_1": 257,
-              "reward_2": 2,
-              "reward_3": 1000,
-              "reward_4": 1,
-              "reward_5": 100
+              "coin": 11000,
+              "blueGem": 100,
+              "ticket": 100,
+              "greenGem": 200,
+              "egg": 50
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
-              "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "ticket": "0x22091F0",
+              "greenGem": "0x220B1A0",
+              "egg": "0x220A1F0"
             }
           }
+        ],
+        "sourceEntryIndexes": [
+          1,
+          12,
+          19,
+          26,
+          33,
+          40
         ]
       },
       {
@@ -8226,115 +9028,123 @@ window.SMITH_LEGEND_DATA = {
           {
             "rankThreshold": 1,
             "rewards": {
-              "reward_1": 20000,
-              "reward_2": 400,
-              "reward_3": 200,
-              "reward_4": 800,
-              "reward_5": 170,
-              "reward_6": 120
+              "coin": 51300,
+              "blueGem": 975,
+              "greenKey": 3,
+              "greenGem": 3755,
+              "redKey": 3,
+              "feather": 350
             },
             "rewardSlots": {
-              "reward_1": "0x220C1E0",
-              "reward_2": "0x220C1E8",
-              "reward_3": "0x220C1F0",
-              "reward_4": "0x220C1A0",
-              "reward_5": "0x220C1B0",
-              "reward_6": "0x220BDC8"
+              "coin": "0x220C1E0",
+              "blueGem": "0x220C1E8",
+              "greenKey": "0x220C210",
+              "greenGem": "0x220C1A0",
+              "redKey": "0x220C208",
+              "feather": "0x220BDC8"
             }
           },
           {
             "rankThreshold": 2,
             "rewards": {
-              "reward_1": 1000,
-              "reward_2": 4,
-              "reward_3": 2849,
-              "reward_4": 4,
-              "reward_5": 250,
-              "reward_6": 153300
+              "coin": 37800,
+              "blueGem": 713,
+              "greenGem": 3,
+              "reward_4": 2350,
+              "feather": 3,
+              "redKey": 200
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
               "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8",
-              "reward_6": "0x220B208"
+              "feather": "0x220ADC8",
+              "redKey": "0x220B208"
             }
           },
           {
             "rankThreshold": 3,
             "rewards": {
-              "reward_1": 754,
-              "reward_2": 3,
-              "reward_3": 1386,
-              "reward_4": 3,
-              "reward_5": 200,
-              "reward_6": 120000
+              "coin": 31050,
+              "blueGem": 505,
+              "greenGem": 2,
+              "reward_4": 1012,
+              "feather": 2,
+              "redKey": 128
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
               "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8",
-              "reward_6": "0x220B208"
+              "feather": "0x220ADC8",
+              "redKey": "0x220B208"
             }
           },
           {
             "rankThreshold": 10,
             "rewards": {
-              "reward_1": 561,
-              "reward_2": 2,
-              "reward_3": 831,
-              "reward_4": 2,
-              "reward_5": 150,
-              "reward_6": 90200
+              "coin": 25650,
+              "blueGem": 337,
+              "greenGem": 2,
+              "reward_4": 607,
+              "feather": 1,
+              "redKey": 80
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
               "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8",
-              "reward_6": "0x220B208"
+              "feather": "0x220ADC8",
+              "redKey": "0x220B208"
             }
           },
           {
             "rankThreshold": 20,
             "rewards": {
-              "reward_1": 276,
-              "reward_2": 1,
-              "reward_3": 646,
-              "reward_4": 1,
-              "reward_5": 100,
-              "reward_6": 1151
+              "coin": 18900,
+              "blueGem": 202,
+              "greenGem": 1,
+              "reward_4": 472,
+              "feather": 1,
+              "eggAlt": 27
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
               "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8",
-              "reward_6": "0x220A1B0"
+              "feather": "0x220ADC8",
+              "eggAlt": "0x220A1B0"
             }
           },
           {
             "rankThreshold": 50,
             "rewards": {
-              "reward_1": 20300,
-              "reward_2": 184,
-              "reward_3": 1,
-              "reward_4": 369,
-              "reward_5": 1
+              "coin": 14850,
+              "blueGem": 135,
+              "greenGem": 1,
+              "reward_4": 270,
+              "feather": 1
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
               "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8"
+              "feather": "0x220ADC8"
             }
           }
+        ],
+        "sourceEntryIndexes": [
+          4,
+          8,
+          15,
+          22,
+          29,
+          36
         ]
       },
       {
@@ -8344,117 +9154,123 @@ window.SMITH_LEGEND_DATA = {
           {
             "rankThreshold": 1,
             "rewards": {
-              "reward_1": 51300,
-              "reward_2": 975,
-              "reward_3": 3,
-              "reward_4": 3755,
-              "reward_5": 3,
-              "reward_6": 350
+              "coin": 70200,
+              "blueGem": 1424,
+              "greenKey": 4,
+              "greenGem": 4404,
+              "redKey": 4,
+              "feather": 500
             },
             "rewardSlots": {
-              "reward_1": "0x220C1E0",
-              "reward_2": "0x220C1E8",
-              "reward_3": "0x220C210",
-              "reward_4": "0x220C1A0",
-              "reward_5": "0x220C208",
-              "reward_6": "0x220BDC8"
+              "coin": "0x220C1E0",
+              "blueGem": "0x220C1E8",
+              "greenKey": "0x220C210",
+              "greenGem": "0x220C1A0",
+              "redKey": "0x220C208",
+              "feather": "0x220BDC8"
             }
           },
           {
             "rankThreshold": 2,
             "rewards": {
-              "reward_1": 1804,
-              "reward_2": 8,
-              "reward_3": 9000,
-              "reward_4": 8,
-              "reward_5": 700,
-              "reward_6": 28000
+              "coin": 51700,
+              "blueGem": 1000,
+              "greenGem": 4,
+              "reward_4": 2849,
+              "feather": 4,
+              "redKey": 250
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
               "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8",
-              "reward_6": "0x220B208"
+              "feather": "0x220ADC8",
+              "redKey": "0x220B208"
             }
           },
           {
             "rankThreshold": 3,
             "rewards": {
-              "reward_1": 1407,
-              "reward_2": 7,
-              "reward_3": 7000,
-              "reward_4": 7,
-              "reward_5": 550,
-              "reward_6": 23000
+              "coin": 42500,
+              "blueGem": 754,
+              "greenGem": 3,
+              "reward_4": 1386,
+              "feather": 3,
+              "redKey": 200
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
               "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8",
-              "reward_6": "0x220B208"
+              "feather": "0x220ADC8",
+              "redKey": "0x220B208"
             }
           },
           {
             "rankThreshold": 10,
             "rewards": {
-              "reward_1": 1250,
-              "reward_2": 6,
-              "reward_3": 6000,
-              "reward_4": 6,
-              "reward_5": 300,
-              "reward_6": 19000
+              "coin": 35100,
+              "blueGem": 561,
+              "greenGem": 2,
+              "reward_4": 831,
+              "feather": 2,
+              "redKey": 150
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
               "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8",
-              "reward_6": "0x220B208"
+              "feather": "0x220ADC8",
+              "redKey": "0x220B208"
             }
           },
           {
             "rankThreshold": 20,
             "rewards": {
-              "reward_1": 5,
-              "reward_2": 5000,
-              "reward_3": 5,
-              "reward_4": 250,
-              "reward_5": 14000,
-              "reward_6": 150
+              "coin": 25800,
+              "blueGem": 276,
+              "greenGem": 1,
+              "reward_4": 646,
+              "feather": 1,
+              "eggAlt": 100
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
               "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8",
-              "reward_6": "0x220A1B0"
+              "feather": "0x220ADC8",
+              "eggAlt": "0x220A1B0"
             }
           },
           {
             "rankThreshold": 50,
             "rewards": {
-              "reward_1": 50,
-              "reward_2": 60600,
-              "reward_3": 967,
-              "reward_4": 4,
-              "reward_5": 4000,
-              "reward_6": 4
+              "coin": 20300,
+              "blueGem": 184,
+              "greenGem": 1,
+              "reward_4": 369,
+              "feather": 1
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B1A0",
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
               "reward_4": "0x220C2B8",
-              "reward_5": "0x220ADC8",
-              "reward_6": "0x22091F0"
+              "feather": "0x220ADC8"
             }
           }
+        ],
+        "sourceEntryIndexes": [
+          0,
+          10,
+          17,
+          24,
+          31,
+          38
         ]
       },
       {
@@ -8464,115 +9280,125 @@ window.SMITH_LEGEND_DATA = {
           {
             "rankThreshold": 1,
             "rewards": {
-              "reward_1": 98200,
-              "reward_2": 1893,
-              "reward_3": 7,
-              "reward_4": 6000,
-              "reward_5": 7,
-              "reward_6": 600
+              "coin": 98200,
+              "blueGem": 1893,
+              "greenKey": 7,
+              "greenGem": 6000,
+              "redKey": 7,
+              "feather": 600
             },
             "rewardSlots": {
-              "reward_1": "0x220C1E0",
-              "reward_2": "0x220C1E8",
-              "reward_3": "0x220B210",
-              "reward_4": "0x220B1A0",
-              "reward_5": "0x220B208",
-              "reward_6": "0x220ADC8"
+              "coin": "0x220C1E0",
+              "blueGem": "0x220C1E8",
+              "greenKey": "0x220B210",
+              "greenGem": "0x220B1A0",
+              "redKey": "0x220B208",
+              "feather": "0x220ADC8"
             }
           },
           {
             "rankThreshold": 2,
             "rewards": {
-              "reward_1": 580,
-              "reward_2": 2,
-              "reward_3": 1200,
-              "reward_4": 2,
-              "reward_5": 140,
-              "reward_6": 24000
+              "coin": 153300,
+              "blueGem": 1804,
+              "greenGem": 8,
+              "reward_4": 9000,
+              "feather": 8,
+              "redKey": 700
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B210",
-              "reward_4": "0x220B1A0",
-              "reward_5": "0x220B208",
-              "reward_6": "0x220ADC8"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
+              "reward_4": "0x220C2B8",
+              "feather": "0x220ADC8",
+              "redKey": "0x220B208"
             }
           },
           {
             "rankThreshold": 3,
             "rewards": {
-              "reward_1": 300,
-              "reward_2": 1,
-              "reward_3": 750,
-              "reward_4": 1,
-              "reward_5": 80,
-              "reward_6": 19000
+              "coin": 120000,
+              "blueGem": 1407,
+              "greenGem": 7,
+              "reward_4": 7000,
+              "feather": 7,
+              "redKey": 550
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B210",
-              "reward_4": "0x220B1A0",
-              "reward_5": "0x220B208",
-              "reward_6": "0x220ADC8"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
+              "reward_4": "0x220C2B8",
+              "feather": "0x220ADC8",
+              "redKey": "0x220B208"
             }
           },
           {
             "rankThreshold": 10,
             "rewards": {
-              "reward_1": 250,
-              "reward_2": 1,
-              "reward_3": 450,
-              "reward_4": 200,
-              "reward_5": 50,
-              "reward_6": 15000
+              "coin": 90200,
+              "blueGem": 1250,
+              "greenGem": 6,
+              "reward_4": 6000,
+              "feather": 6,
+              "redKey": 300
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B210",
-              "reward_4": "0x220B1A0",
-              "reward_5": "0x220A1B0",
-              "reward_6": "0x220ADC8"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
+              "reward_4": "0x220C2B8",
+              "feather": "0x220ADC8",
+              "redKey": "0x220B208"
             }
           },
           {
             "rankThreshold": 20,
             "rewards": {
-              "reward_1": 140,
-              "reward_2": 350,
-              "reward_3": 100,
-              "reward_4": 20,
-              "reward_5": 11000,
-              "reward_6": 120
+              "coin": 71600,
+              "blueGem": 1151,
+              "greenGem": 5,
+              "reward_4": 5000,
+              "feather": 5,
+              "eggAlt": 250
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x22091F0",
-              "reward_4": "0x220B1A0",
-              "reward_5": "0x220A1F0",
-              "reward_6": "0x220ADC8"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
+              "reward_4": "0x220C2B8",
+              "feather": "0x220ADC8",
+              "eggAlt": "0x220A1B0"
             }
           },
           {
             "rankThreshold": 50,
             "rewards": {
-              "reward_1": 200,
-              "reward_2": 11000,
-              "reward_3": 100,
-              "reward_4": 100,
-              "reward_5": 200
+              "coin": 60600,
+              "blueGem": 967,
+              "greenGem": 4,
+              "reward_4": 4000,
+              "feather": 4,
+              "ticket": 200
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x22091F0",
-              "reward_4": "0x220B1A0",
-              "reward_5": "0x220A1F0"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
+              "reward_4": "0x220C2B8",
+              "feather": "0x220ADC8",
+              "ticket": "0x22091F0"
             }
           }
+        ],
+        "sourceEntryIndexes": [
+          5,
+          11,
+          18,
+          25,
+          32,
+          39
         ]
       },
       {
@@ -8582,119 +9408,125 @@ window.SMITH_LEGEND_DATA = {
           {
             "rankThreshold": 1,
             "rewards": {
-              "reward_1": 29000,
-              "reward_2": 400,
-              "reward_3": 2,
-              "reward_4": 1000,
-              "reward_5": 1,
-              "reward_6": 150
+              "coin": 190400,
+              "blueGem": 2848,
+              "greenKey": 10,
+              "greenGem": 12800,
+              "redKey": 10,
+              "feather": 900
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B210",
-              "reward_4": "0x220B1A0",
-              "reward_5": "0x220B208",
-              "reward_6": "0x220ADC8"
+              "coin": "0x220C1E0",
+              "blueGem": "0x220C1E8",
+              "greenKey": "0x220C210",
+              "greenGem": "0x220C1A0",
+              "redKey": "0x220C208",
+              "feather": "0x220BDC8"
             }
           },
           {
             "rankThreshold": 2,
             "rewards": {
-              "reward_1": 300,
-              "reward_2": 1,
-              "reward_3": 750,
-              "reward_4": 1,
-              "reward_5": 100,
-              "reward_6": 13000
+              "coin": 72300,
+              "blueGem": 1282,
+              "greenGem": 5,
+              "reward_4": 3500,
+              "feather": 5,
+              "redKey": 300
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B210",
-              "reward_4": "0x220B1A0",
-              "reward_5": "0x220B208",
-              "reward_6": "0x220ADC8"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
+              "reward_4": "0x220C2B8",
+              "feather": "0x220ADC8",
+              "redKey": "0x220B208"
             }
           },
           {
             "rankThreshold": 3,
             "rewards": {
-              "reward_1": 230,
-              "reward_2": 1,
-              "reward_3": 600,
-              "reward_4": 1,
-              "reward_5": 60,
-              "reward_6": 9000
+              "coin": 59500,
+              "blueGem": 975,
+              "greenGem": 4,
+              "reward_4": 2500,
+              "feather": 3,
+              "redKey": 250
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220B210",
-              "reward_4": "0x220B1A0",
-              "reward_5": "0x220B208",
-              "reward_6": "0x220ADC8"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
+              "reward_4": "0x220C2B8",
+              "feather": "0x220ADC8",
+              "redKey": "0x220B208"
             }
           },
           {
             "rankThreshold": 10,
             "rewards": {
-              "reward_1": 180,
-              "reward_2": 110,
-              "reward_3": 400,
-              "reward_4": 120,
-              "reward_5": 20,
-              "reward_6": 7000
+              "coin": 49100,
+              "blueGem": 745,
+              "greenGem": 4,
+              "reward_4": 2000,
+              "feather": 2,
+              "redKey": 200
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220A1F0",
-              "reward_4": "0x220B1A0",
-              "reward_5": "0x220A1B0",
-              "reward_6": "0x220ADC8"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
+              "reward_4": "0x220C2B8",
+              "feather": "0x220ADC8",
+              "redKey": "0x220B208"
             }
           },
           {
             "rankThreshold": 20,
             "rewards": {
-              "reward_1": 90,
-              "reward_2": 300,
-              "reward_3": 50,
-              "reward_4": 5000,
-              "reward_5": 50
+              "coin": 36100,
+              "blueGem": 386,
+              "greenGem": 3,
+              "reward_4": 1500,
+              "feather": 2,
+              "eggAlt": 150
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220A1F0",
-              "reward_4": "0x220B1A0",
-              "reward_5": "0x22091F0"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
+              "reward_4": "0x220C2B8",
+              "feather": "0x220ADC8",
+              "eggAlt": "0x220A1B0"
             }
           },
           {
             "rankThreshold": 50,
             "rewards": {
-              "reward_1": 50,
-              "reward_2": 10,
-              "reward_3": 8000,
-              "reward_4": 70
+              "coin": 28400,
+              "blueGem": 257,
+              "greenGem": 2,
+              "reward_4": 1000,
+              "feather": 1
             },
             "rewardSlots": {
-              "reward_1": "0x220B1E0",
-              "reward_2": "0x220B1E8",
-              "reward_3": "0x220A1F0",
-              "reward_4": "0x220B1A0"
+              "coin": "0x220B1E0",
+              "blueGem": "0x220B1E8",
+              "greenGem": "0x220B1A0",
+              "reward_4": "0x220C2B8",
+              "feather": "0x220ADC8"
             }
           }
+        ],
+        "sourceEntryIndexes": [
+          2,
+          9,
+          16,
+          23,
+          30,
+          37
         ]
       }
     ]
-  },
-  "rarityUpgrades": {
-    "note": "GearRarityTimers only initializes defaults in the APK: crystalPricePerMinute=2 and MaxRarityLevel=90. The milestone requirements, coin prices, and minute arrays are loaded through GearConfigDTO/server config at runtime, so per-level cost/time data is not present as local fixed data.",
-    "crystalPricePerMinute": 2,
-    "maxRarityLevel": 90,
-    "levels": []
   }
 };
