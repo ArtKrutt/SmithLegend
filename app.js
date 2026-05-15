@@ -1317,7 +1317,7 @@
 
     els.selectAllSkills.addEventListener("click", () => setSelectedSkills(skills.map((skill) => skill.skillNum)));
     els.clearSkills.addEventListener("click", () => setSelectedSkills([]));
-    els.topDpsSkills.addEventListener("click", () => selectTopSkillsByMetric("dps", 5));
+    els.topDpsSkills.addEventListener("click", () => selectTopSkillsByMetric("dps", 6));
     els.topAttackSkills.addEventListener("click", () => selectTopSkillsByMetric("attack", 5));
 
     els.skillBuildBody.addEventListener("input", (event) => {
